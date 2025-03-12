@@ -7,17 +7,8 @@ const BusinessCard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-500 to-orange-400 flex flex-col items-center p-6">
-      {/* Logo */}
-      <div className="w-64 mt-8 mb-6">
-        <img
-          src="/lovable-uploads/0d654465-b65c-4eea-a6b4-ab60ce7c586e.png"
-          alt="Tecnocomp"
-          className="w-full object-contain"
-        />
-      </div>
-
       {/* Profile Picture */}
-      <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-lg mb-6">
+      <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-lg mb-6 mt-12">
         <img
           src="/placeholder.svg"
           alt="Profile"
