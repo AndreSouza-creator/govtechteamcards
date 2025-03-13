@@ -7,6 +7,7 @@ import tecnologo from './../img/Logo.svg'
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
+//test
 
 const HeaderMenu: React.FC<ProtectedRouteProps> = ({ children }) => {
   const location = useLocation();
