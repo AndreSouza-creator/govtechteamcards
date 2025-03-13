@@ -17,10 +17,10 @@ const MemberDetail = () => {
       <div className="min-h-screen bg-gradient-to-b from-orange-500 to-orange-400 flex flex-col items-center justify-center p-6">
         <h1 className="text-white text-2xl mb-4">Membro não encontrado</h1>
         <Button 
-          onClick={() => navigate('/team')}
+          onClick={() => navigate('/')}
           className="bg-white text-orange-500 hover:bg-gray-100"
         >
-          Voltar para o time
+          Voltar para página inicial
         </Button>
       </div>
     );
@@ -110,9 +110,9 @@ const MemberDetail = () => {
           
           <Button 
             className="w-full bg-white text-orange-500 hover:bg-gray-100 py-3 px-6 rounded-full transition-all duration-300"
-            onClick={() => navigate('/team')}
+            onClick={() => navigate('/')}
           >
-            Voltar para o time
+            Voltar para página inicial
           </Button>
         </div>
       </div>
