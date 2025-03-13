@@ -1,10 +1,15 @@
-
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
+
+const users = {
+  admin: 'govtech@2025',
+  jhonatas: 'Jhonatas@Govhead',
+  mauro: 'securepass',
+};
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -12,18 +17,17 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { toast } = useToast();
-  
+  const { toast } = useToast();  
   const from = location.state?.from?.pathname || '/';
 
-  const handleLogin = (e: React.FormEvent) => {
+
+
+  const handleLogin = (e) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate authentication delay
     setTimeout(() => {
-      if (username === 'admin' && password === 'govtech@2025') {
-        // Store auth in session storage (will be cleared when browser is closed)
+      if (users[username] && users[username] === password) {
         sessionStorage.setItem('isAuthenticated', 'true');
         navigate('/team', { replace: true });
       } else {

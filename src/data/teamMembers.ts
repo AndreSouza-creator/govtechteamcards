@@ -1,3 +1,14 @@
+import jhonatas from "./../img/TeamPictures/JhonatasRocha.png";
+import mauro from "./../img/TeamPictures/MauroMarsura.png";
+import danilo from "./../img/TeamPictures/DaniloMaheli.png";
+import hallan from "./../img/TeamPictures/HallanFernandes.png";
+import argemiro from "./../img/TeamPictures/ArgemiroJr.png";
+import andre from "./../img/TeamPictures/AndreSouza.png";
+import marcos from "./../img/TeamPictures/MarcosRevite.png";
+import josimar from "./../img/TeamPictures/JosimarCaitano.png";
+import natalia from "./../img/TeamPictures/NataliaLeal.png";
+import anna from "./../img/TeamPictures/AnaSartoriCarvalho.png";
+import leonardo from "./../img/TeamPictures/LeonardoAmorin.png";
 
 export interface TeamMember {
   nome: string;
@@ -17,7 +28,7 @@ export const teamMembers: TeamMember[] = [
     email: "jhonatas.rocha@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
-    image: "/placeholder.svg"
+    image: jhonatas
   },
   {
     nome: "Mauro Cesar Marsura",
@@ -26,7 +37,7 @@ export const teamMembers: TeamMember[] = [
     email: "mauro.marsura@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
-    image: "/placeholder.svg"
+    image: mauro
   },
   {
     nome: "Leonardo Araújo",
@@ -35,7 +46,7 @@ export const teamMembers: TeamMember[] = [
     email: "leonardo.araujo@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
-    image: "/lovable-uploads/e006e1f0-a3e2-4263-8f12-4d8579bf9e38.png"
+    image: leonardo
   },
   {
     nome: "Danilo Maheli Torres",
@@ -44,7 +55,7 @@ export const teamMembers: TeamMember[] = [
     email: "danilo.torres@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
-    image: "/placeholder.svg"
+    image: danilo
   },
   {
     nome: "Hallan Rodrigues Fernandes",
@@ -53,34 +64,34 @@ export const teamMembers: TeamMember[] = [
     email: "danilo.torres@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
-    image: "/placeholder.svg"
+    image: hallan
   },
   {
     nome: "Argemiro Bezerra Junior",
-    cargo: "Account Manager/Engineer",
+    cargo: "Solutions Architect - Pre Sales/ Engineer",
     tel: "+55 11 91612-8898",
     email: "argemiro.junior@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
-    image: "/placeholder.svg"
+    image: argemiro
   },
   {
-    nome: "André Brito de Souza",
+    nome: "André de Souza Silva",
     cargo: "Product Manager/Solutions Architect - Pre-Sales",
     tel: "+55 11 98680-8431",
-    email: "danilo.torres@tecnocomp.com.br",
+    email: "andre.silva@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
-    image: "/placeholder.svg"
+    image: andre
   },
   {
-    nome: "Marcos Vinicius Santos Revite",
+    nome: "Marcos Vinicius S. Revite",
     cargo: "Solutions Architect - Pre-Sales",
     tel: "+55 11 98655-3055",
     email: "marcos.revite@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
-    image: "/placeholder.svg"
+    image: marcos
   },
   {
     nome: "Josimar Caitano",
@@ -89,7 +100,7 @@ export const teamMembers: TeamMember[] = [
     email: "josimar.caitano@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
-    image: "/placeholder.svg"
+    image: josimar
   },
   {
     nome: "Natalia Leal",
@@ -98,7 +109,7 @@ export const teamMembers: TeamMember[] = [
     email: "natalia.leal@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
-    image: "/placeholder.svg"
+    image: natalia
   },
   {
     nome: "Ana Carolina Sartori Carvalho",
@@ -107,6 +118,6 @@ export const teamMembers: TeamMember[] = [
     email: "ana.carvalho@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
-    image: "/placeholder.svg"
+    image: anna
   }
 ];

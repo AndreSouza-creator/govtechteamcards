@@ -5,6 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TeamMember } from '@/data/teamMembers';
+import "./../pages/CSS/teamstyle.css"
 
 interface TeamMemberCardProps {
   member: TeamMember;
@@ -17,14 +18,16 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member }) => {
     .map(name => name.charAt(0))
     .join('');
 
-  const handleClick = () => {
-    navigate(`/member/${encodeURIComponent(member.nome)}`);
-  };
+    const handleClick = () => {
+      const nomeSemEspacos = member.nome.replace(/\s+/g, '');
+      navigate(`/member/${encodeURIComponent(nomeSemEspacos)}`);
+    };
+    
 
   return (
-    <Card className="w-full hover:shadow-md transition-all duration-300">
-      <CardContent className="p-6 flex flex-col items-center text-center">
-        <Avatar className="w-24 h-24 mb-4 border-2 border-orange-300">
+    <div className="w-full hover:shadow-md transition-all duration-3000">
+      <div className="p-6 flex flex-col items-center text-center" id="customteamCard">
+        <Avatar className="w-40 h-40 mb-4 border-2 border-orange-300">
           {member.image ? (
             <AvatarImage src={member.image} alt={member.nome} />
           ) : (
@@ -33,16 +36,16 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member }) => {
             </AvatarFallback>
           )}
         </Avatar>
-        <h3 className="font-bold text-lg mb-1">{member.nome}</h3>
-        <p className="text-sm text-gray-600 mb-4">{member.cargo}</p>
+        <h3 className="text-lg mb-1">{member.nome}</h3>
+        <h2 className="text-md text-600 mb-4">{member.cargo}</h2>
         <Button 
           onClick={handleClick}
-          className="w-full bg-orange-500 hover:bg-orange-600"
+          id="seeCard"
         >
-          Ver detalhes
+          Ver cartão de visita digital
         </Button>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 

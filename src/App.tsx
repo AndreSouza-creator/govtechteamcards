@@ -9,7 +9,7 @@ import Team from "./pages/Team";
 import MemberDetail from "./pages/MemberDetail";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
-import ProtectedRoute from "./components/ProtectedRoute";
+import HeaderMenu from "./components/HeaderMenu";
 
 const queryClient = new QueryClient();
 
@@ -25,9 +25,9 @@ const App = () => (
           <Route 
             path="/team" 
             element={
-              <ProtectedRoute>
+              <HeaderMenu>
                 <Team />
-              </ProtectedRoute>
+              </HeaderMenu>
             } 
           />
           <Route path="/member/:name" element={<MemberDetail />} />
