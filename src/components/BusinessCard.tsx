@@ -10,7 +10,7 @@ const BusinessCard = () => {
       {/* Profile Picture */}
       <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-lg mb-6 mt-12">
         <img
-          src="/placeholder.svg"
+          src="/lovable-uploads/e006e1f0-a3e2-4263-8f12-4d8579bf9e38.png"
           alt="Profile"
           className="w-full h-full object-cover"
         />
