@@ -4,11 +4,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { teamMembers } from '@/data/teamMembers';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { ExternalLink } from 'lucide-react';
 
 const MemberDetail = () => {
   const { name } = useParams();
   const navigate = useNavigate();
+  const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
   
   const member = teamMembers.find(m => m.nome === decodeURIComponent(name || ''));
   
@@ -30,6 +31,17 @@ const MemberDetail = () => {
     .split(' ')
     .map(name => name.charAt(0))
     .join('');
+
+  // Generate WhatsApp link
+  const generateWhatsAppLink = (phoneNumber, message) => {
+    // Remove any non-digit characters from phone number
+    const cleanPhone = phoneNumber.replace(/\D/g, '');
+    const encodedMessage = encodeURIComponent(message);
+    return `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
+  };
+
+  const whatsappMessage = "Olá! Estou entrando em contato através do cartão de visita.";
+  const whatsappLink = member.tel ? generateWhatsAppLink(member.tel, whatsappMessage) : '';
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-500 to-orange-400 flex flex-col items-center p-6">
@@ -74,25 +86,38 @@ const MemberDetail = () => {
             
             <div className="mb-3">
               <p className="text-sm text-gray-500">Site</p>
-              <p>{member.site}</p>
+              <Button 
+                variant="outline"
+                className="mt-1 w-full justify-between"
+                onClick={() => window.open(`https://${member.site}`, '_blank')}
+              >
+                {member.site} <ExternalLink className="h-4 w-4" />
+              </Button>
             </div>
             
             <div>
               <p className="text-sm text-gray-500">Portfolio</p>
-              <p>{member.portfolio}</p>
+              <Button 
+                variant="outline"
+                className="mt-1 w-full justify-between"
+                onClick={() => window.open(`https://${member.portfolio}`, '_blank')}
+              >
+                {member.portfolio} <ExternalLink className="h-4 w-4" />
+              </Button>
             </div>
           </CardContent>
         </Card>
 
         {/* Buttons */}
         <div className="w-full space-y-4">
-          <Button 
-            className="w-full bg-[#4A4A4A] hover:bg-[#3A3A3A] text-white py-3 px-6 rounded-full transition-all duration-300"
-            onClick={() => window.location.href = `tel:${member.tel}`}
-            disabled={!member.tel}
-          >
-            Ligar
-          </Button>
+          {member.tel && (
+            <Button 
+              className="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-full transition-all duration-300"
+              onClick={() => window.open(whatsappLink, '_blank')}
+            >
+              Mensagem no WhatsApp
+            </Button>
+          )}
           
           <Button 
             className="w-full bg-[#4A4A4A] hover:bg-[#3A3A3A] text-white py-3 px-6 rounded-full transition-all duration-300"
@@ -108,12 +133,14 @@ const MemberDetail = () => {
             Portfolio da Tecnocomp
           </Button>
           
-          <Button 
-            className="w-full bg-white text-orange-500 hover:bg-gray-100 py-3 px-6 rounded-full transition-all duration-300"
-            onClick={() => navigate('/')}
-          >
-            Voltar para página inicial
-          </Button>
+          {isAuthenticated && (
+            <Button 
+              className="w-full bg-white text-orange-500 hover:bg-gray-100 py-3 px-6 rounded-full transition-all duration-300"
+              onClick={() => navigate('/')}
+            >
+              Voltar para página inicial
+            </Button>
+          )}
         </div>
       </div>
     </div>
