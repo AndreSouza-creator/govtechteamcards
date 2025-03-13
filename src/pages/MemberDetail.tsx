@@ -14,9 +14,18 @@ const MemberDetail = () => {
   const navigate = useNavigate();
   const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
 
+  const formatarNome = (nome) =>
+    nome
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/ç/g, "c")
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .toLowerCase();
+  
   const member = teamMembers.find(m =>
-    m.nome.replace(/\s+/g, '') === decodeURIComponent(name || '').replace(/\s+/g, '')
+    formatarNome(m.nome) === formatarNome(decodeURIComponent(name || ""))
   );
+  
 
 
   if (!member) {

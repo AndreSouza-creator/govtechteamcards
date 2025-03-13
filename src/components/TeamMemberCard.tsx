@@ -19,9 +19,18 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member }) => {
     .join('');
 
     const handleClick = () => {
-      const nomeSemEspacos = member.nome.replace(/\s+/g, '');
-      navigate(`/member/${encodeURIComponent(nomeSemEspacos)}`);
+      const formatarNome = (nome) =>
+        nome
+          .normalize("NFD") // Separa acentos das letras
+          .replace(/[\u0300-\u036f]/g, "") // Remove acentos
+          .replace(/ç/g, "c") // Substitui cedilha
+          .replace(/[^a-zA-Z0-9]/g, "") // Remove caracteres especiais
+          .toLowerCase(); // Converte para minúsculas
+    
+      const nomeFormatado = formatarNome(member.nome);
+      navigate(`/member/${encodeURIComponent(nomeFormatado)}`);
     };
+    
     
 
   return (
