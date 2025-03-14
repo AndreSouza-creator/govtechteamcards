@@ -57,7 +57,7 @@ const generateWhatsAppLink = (phoneNumber, message) => {
   return `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
 };
 
-const whatsappMessage = "Olá, " + member.nome.split(" ")[0] + ", estou entrando em contato através do cartão de visita.";
+const whatsappMessage = "Olá, " + member.nome.split(" ")[0] + ", estou entrando em contato através do cartão de visita virtual. Podemos conversar?";
 const whatsappLink = member.tel ? generateWhatsAppLink(member.tel, whatsappMessage) : '';
 
 useEffect(() => {
