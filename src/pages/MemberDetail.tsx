@@ -10,6 +10,7 @@ import Team from './Team';
 import logo from "./../img/Logo.svg"
 import { useEffect, useState } from 'react';
 import Intro from './Intro/intro';
+import logoWhats from './../img/image.png'
 
 const MemberDetail = () => {
   const { name } = useParams();
@@ -148,8 +149,11 @@ return (
           <Button
             className="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-full transition-all duration-300"
             onClick={() => window.open(whatsappLink, '_blank')}
-          >
+            id='whatstalkbutton'
+          ><span>
+            <img src={logoWhats} id='whatslogo'></img>
             Conversar no WhatsApp
+            </span>
           </Button>
         )}
 
