@@ -61,7 +61,7 @@ export const teamMembers: TeamMember[] = [
     nome: "Hallan Rodrigues Fernandes",
     cargo: "Account Manager/Attorney",
     tel: "+55 11 91001-1073",
-    email: "danilo.torres@tecnocomp.com.br",
+    email: "hallan.fernandes@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
     image: hallan
