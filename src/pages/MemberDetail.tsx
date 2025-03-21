@@ -115,8 +115,8 @@ const MemberDetail = () => {
               </div>
             
               {/* Contact Info */}
-              <div className="custom">
-                <div className="p-6">
+              <div>
+                <div className="custom">
                   {member.tel && (
                     <div className="mb-3">
                       <p className="text-lg text-white-700">Contato</p>
