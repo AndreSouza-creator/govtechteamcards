@@ -90,7 +90,7 @@ const MemberDetail = () => {
               </div>
               {/* Profile Picture */}
               <div className='Profile3d'>
-                <div className="w-40 h-40 mx-auto rounded-full overflow-hidden border-4 border-white shadow-lg mb-6 mt-12">
+                <div className="w-40 h-40 mx-auto rounded-full overflow-hidden border-4 border-white shadow-lg">
                   {member.image ? (
                     <img
                       src={member.image}
