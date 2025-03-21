@@ -13,7 +13,7 @@
 
 
 #logoDetails{
-    width: 30%;
+    width: 500px;
     margin-top: 2%;
     margin-bottom: 2%;
 }
@@ -37,8 +37,6 @@
     padding-right: 5%;
     position: fixed;
 }
-
-
 
 .headernavbar img{
     width: 35%;
@@ -112,8 +110,6 @@
     border-radius: 15px
 }
 
-
-
 /* Envolver botão de voltar */
 .wrapperButton{
     background-color: unset;
@@ -161,17 +157,14 @@
     width: 100vw;
     min-height: 100%;
     z-index: -1;
-   
 }
 
 #logoDetails{
-    width: 30%;
+    width: 45%;
 }
-
 
 .logowrapper{
     width: 100%;
-  
     display: flex;
     justify-content: center;
 }
@@ -186,6 +179,13 @@
 .Profile3d{
     display: flex;
     flex-direction: column;
+}
+
+.custom{
+    margin-top: 10px;
+    background: linear-gradient(rgba(255, 108, 10, 0.046), rgba(214, 160, 112, 0.291)) ;
+    border-radius: 15px;
+    margin-bottom: 5%;
 }
 
 
