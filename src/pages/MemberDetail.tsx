@@ -77,7 +77,7 @@ const MemberDetail = () => {
           </video>
           <div className="min-h-screen  flex flex-col items-center p-6" id="customMemberDetailContent">
             <img src={logo} id='logoDetails' />
-            <br />
+
             <div className="w-full max-w-md" id="mainDetailedCard">
               <div className='wrapperButton'>
                 {isAuthenticated && (
@@ -185,6 +185,7 @@ const MemberDetail = () => {
         </>
       )}
     </div>
+    
   );
 };
 
