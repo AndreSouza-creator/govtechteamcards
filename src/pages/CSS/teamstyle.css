@@ -13,7 +13,7 @@
 
 
 #logoDetails{
-    width: 20%;
+    width: 30%;
     margin-top: 2%;
     margin-bottom: 2%;
 }
@@ -154,7 +154,7 @@
     max-width: unset;
 }
 
-/* #myVideoMobile {
+#myVideoMobile {
     position: fixed;
     right: 0;
     bottom: 0;
@@ -162,7 +162,7 @@
     min-height: 100%;
     z-index: -1;
    
-} */
+}
 
 #logoDetails{
     width: 30%;

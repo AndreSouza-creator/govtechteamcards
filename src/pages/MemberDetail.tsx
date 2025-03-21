@@ -72,13 +72,11 @@ const MemberDetail = () => {
         <Intro />
       ) : (
         <>
-
-            
           <video autoPlay muted loop id="myVideoDesktop">
             <source src={FundoBG} type="video/mp4" />
           </video>
           <div className="min-h-screen  flex flex-col items-center p-6" id="customMemberDetailContent">
-          <img src={logo} id='logoDetails' />
+            <img src={logo} id='logoDetails' />
             <br />
             <div className="w-full max-w-md" id="mainDetailedCard">
               <div className='wrapperButton'>
@@ -106,7 +104,7 @@ const MemberDetail = () => {
                   )}
                 </div>
                 <div className='logowrapper'>
-                <img src={logo3d} id="logo3d"></img>
+                  <img src={logo3d} id="logo3d"></img>
                 </div>
               </div>
 
@@ -120,13 +118,13 @@ const MemberDetail = () => {
                 <div className="p-6">
                   {member.tel && (
                     <div className="mb-3">
-                      <p className="text-sm text-white-500">Contato</p>
+                      <p className="text-lg text-white-700">Contato</p>
                       <p>{member.tel}</p>
                     </div>
                   )}
 
                   <div className="mb-3">
-                    <p className="text-sm text-white-500">Email</p>
+                    <p className="text-lg text-white-700">Email</p>
                     <p className="break-all">
                       {member.email.split("@").map((part, index) =>
                         index === 0 ? (
