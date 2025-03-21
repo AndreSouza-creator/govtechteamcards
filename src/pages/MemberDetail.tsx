@@ -61,7 +61,7 @@ const MemberDetail = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowIntro(false);
-    }, 4000); // 3 segundos
+    }, 5000); // 3 segundos
 
     return () => clearTimeout(timer); // Limpa o timer ao desmontar
   }, []);

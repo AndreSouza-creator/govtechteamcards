@@ -1,4 +1,247 @@
-.introWrapper{
+.introWrapper {
+  width: 100vw;
+  height: 100vh;
+  background: #1b1b1b;
+  display: flex;
+  text-align: center;
+  padding: 2%;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.introbigTitle {
+  font-size: 1.5rem;
+  padding: 15px;
+  color: rgb(255, 255, 255);
+  text-align: center;
+  font-weight: 700;
+  margin: 1rem 0 1rem 1rem;
+}
+
+.Tecnoloader {
+  width: 50%;
+  align-self: center;
+}
+
+.wrapperTextType {
+  height: 150px;
+}
+
+/* Typewriter effect */
+@keyframes typing {
+
+  0.0000%,
+  27.3488% {
+    content: "";
+  }
+
+  1.1395%,
+  26.2093% {
+    content: "N";
+  }
+
+  2.2791%,
+  25.0698% {
+    content: "Nós";
+  }
+
+  3.4186%,
+  23.9302% {
+    content: "Nós ";
+  }
+
+  4.5581%,
+  22.7907% {
+    content: "Nós t";
+  }
+
+  5.6977%,
+  21.6512% {
+    content: "Nós tr";
+  }
+
+  6.8372%,
+  20.5116% {
+    content: "Nós tra";
+  }
+
+  7.9767%,
+  19.3721% {
+    content: "Nós tran";
+  }
+
+  9.1163%,
+  18.2326% {
+    content: "Nós trans";
+  }
+
+  10.2558%,
+  17.0930% {
+    content: "Nós transfo";
+  }
+
+  11.3953% {
+    content: "Nós transforma";
+  }
+
+  12.5349% {
+    content: "Nós transformam";
+  }
+
+  13.6744% {
+    content: "Nós transformamos";
+  }
+
+  14.8140% {
+    content: "Nós transformamos ";
+  }
+
+  15.9535% {
+    content: "Nós transformamos o";
+  }
+
+  17.0930% {
+    content: "Nós transformamos o ";
+  }
+
+  18.2326% {
+    content: "Nós transformamos o m";
+  }
+
+  19.3721% {
+    content: "Nós transformamos o mu";
+  }
+
+  20.5116% {
+    content: "Nós transformamos o mun";
+  }
+
+  21.6512% {
+    content: "Nós transformamos o mund";
+  }
+
+  22.7907% {
+    content: "Nós transformamos o mundo";
+  }
+
+  23.9302% {
+    content: "Nós transformamos o mundo ";
+  }
+
+  25.0698% {
+    content: "Nós transformamos o mundo p";
+  }
+
+  26.2093% {
+    content: "Nós transformamos o mundo po";
+  }
+
+  27.3488% {
+    content: "Nós transformamos o mundo por";
+  }
+
+  28.4884% {
+    content: "Nós transformamos o mundo por ";
+  }
+
+  29.6279% {
+    content: "Nós transformamos o mundo por m";
+  }
+
+  30.7674% {
+    content: "Nós transformamos o mundo por me";
+  }
+
+  31.9070% {
+    content: "Nós transformamos o mundo por mei";
+  }
+
+  33.0465% {
+    content: "Nós transformamos o mundo por meio";
+  }
+
+  34.1860% {
+    content: "Nós transformamos o mundo por meio ";
+  }
+
+  35.3256% {
+    content: "Nós transformamos o mundo por meio d";
+  }
+
+  36.4651% {
+    content: "Nós transformamos o mundo por meio da";
+  }
+
+  37.6047% {
+    content: "Nós transformamos o mundo por meio da ";
+  }
+
+  38.7442% {
+    content: "Nós transformamos o mundo por meio da t";
+  }
+
+  39.8837% {
+    content: "Nós transformamos o mundo por meio da te";
+  }
+
+  41.0233% {
+    content: "Nós transformamos o mundo por meio da tec";
+  }
+
+  42.1628% {
+    content: "Nós transformamos o mundo por meio da tecn";
+  }
+
+  43.3023% {
+    content: "Nós transformamos o mundo por meio da tecno";
+  }
+
+  44.4419% {
+    content: "Nós transformamos o mundo por meio da tecnol";
+  }
+
+  45.5814% {
+    content: "Nós transformamos o mundo por meio da tecnolog";
+  }
+
+  46.7209% {
+    content: "Nós transformamos o mundo por meio da tecnologi";
+  }
+
+  47.8605% {
+    content: "Nós transformamos o mundo por meio da tecnologia.";
+  }
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+.typewriter {
+  --caret: currentcolor;
+}
+
+.typewriter::before {
+  content: "";
+  animation: typing 5s infinite;
+}
+
+.typewriter::after {
+  content: "";
+  border-right: 1px solid var(--caret);
+  animation: blink 0.5s infinite;
+}
+
+@media(min-width: 1024px) {
+  .introWrapper {
     width: 100vw;
     height: 100vh;
     background: #1b1b1b;
@@ -7,214 +250,26 @@
     padding: 2%;
     justify-content: center;
     flex-direction: column;
-} 
- .introbigTitle {
-    font-size: 1.5rem;
-    padding: 15px;
-    color: rgb(255, 255, 255);
-    text-align: left;
-    font-weight: 700;
-    margin: 1rem 0 1rem 2rem;
+    text-align: center;
   }
 
-  .Tecnoloader{
-    width: 50%;
+  .Tecnoloader {
+    width: 21%;
     align-self: center;
+    padding-left: 10px;
   }
 
-  .wrapperTextType{
-    height: 150px;
-  }
-  
- /* Typewriter effect */
-@keyframes typing {
-    0.0000%, 27.3488% {
-      content: "";
-    }
-    1.1395%, 26.2093% {
-      content: "N";
-    }
-    2.2791%, 25.0698% {
-      content: "Nós";
-    }
-    3.4186%, 23.9302% {
-      content: "Nós ";
-    }
-    4.5581%, 22.7907% {
-      content: "Nós t";
-    }
-    5.6977%, 21.6512% {
-      content: "Nós tr";
-    }
-    6.8372%, 20.5116% {
-      content: "Nós tra";
-    }
-    7.9767%, 19.3721% {
-      content: "Nós tran";
-    }
-    9.1163%, 18.2326% {
-      content: "Nós trans";
-    }
-    10.2558%, 17.0930% {
-      content: "Nós transfo";
-    }
-    11.3953% {
-      content: "Nós transforma";
-    }
-    12.5349% {
-      content: "Nós transformam";
-    }
-    13.6744% {
-      content: "Nós transformamos";
-    }
-    14.8140% {
-      content: "Nós transformamos ";
-    }
-    15.9535% {
-      content: "Nós transformamos o";
-    }
-    17.0930% {
-      content: "Nós transformamos o ";
-    }
-    18.2326% {
-      content: "Nós transformamos o m";
-    }
-    19.3721% {
-      content: "Nós transformamos o mu";
-    }
-    20.5116% {
-      content: "Nós transformamos o mun";
-    }
-    21.6512% {
-      content: "Nós transformamos o mund";
-    }
-    22.7907% {
-      content: "Nós transformamos o mundo";
-    }
-    23.9302% {
-      content: "Nós transformamos o mundo ";
-    }
-    25.0698% {
-      content: "Nós transformamos o mundo p";
-    }
-    26.2093% {
-      content: "Nós transformamos o mundo po";
-    }
-    27.3488% {
-      content: "Nós transformamos o mundo por";
-    }
-    28.4884% {
-      content: "Nós transformamos o mundo por ";
-    }
-    29.6279% {
-      content: "Nós transformamos o mundo por m";
-    }
-    30.7674% {
-      content: "Nós transformamos o mundo por me";
-    }
-    31.9070% {
-      content: "Nós transformamos o mundo por mei";
-    }
-    33.0465% {
-      content: "Nós transformamos o mundo por meio";
-    }
-    34.1860% {
-      content: "Nós transformamos o mundo por meio ";
-    }
-    35.3256% {
-      content: "Nós transformamos o mundo por meio d";
-    }
-    36.4651% {
-      content: "Nós transformamos o mundo por meio da";
-    }
-    37.6047% {
-      content: "Nós transformamos o mundo por meio da ";
-    }
-    38.7442% {
-      content: "Nós transformamos o mundo por meio da t";
-    }
-    39.8837% {
-      content: "Nós transformamos o mundo por meio da te";
-    }
-    41.0233% {
-      content: "Nós transformamos o mundo por meio da tec";
-    }
-    42.1628% {
-      content: "Nós transformamos o mundo por meio da tecn";
-    }
-    43.3023% {
-      content: "Nós transformamos o mundo por meio da tecno";
-    }
-    44.4419% {
-      content: "Nós transformamos o mundo por meio da tecnol";
-    }
-    45.5814% {
-      content: "Nós transformamos o mundo por meio da tecnolog";
-    }
-    46.7209% {
-      content: "Nós transformamos o mundo por meio da tecnologi";
-    }
-    47.8605% {
-      content: "Nós transformamos o mundo por meio da tecnologia.";
-    }
-  }
-  
-  @keyframes blink {
-    0%,
-    100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0;
-    }
-  }
-  
-  .typewriter {
-    --caret: currentcolor;
-  }
-  
-  .typewriter::before {
-    content: "";
-    animation: typing 5s infinite;
-  }
-  
-  .typewriter::after {
-    content: "";
-    border-right: 1px solid var(--caret);
-    animation: blink 0.5s ease-in-out;
+  .introbigTitle {
+    font-size: 2rem;
+    text-align: center;
+
   }
 
-  @media(min-width: 1024px){
-    .introWrapper{
-        width: 100vw;
-        height: 100vh;
-        background: #1b1b1b;
-        display: flex;
-        text-align: center;
-        padding: 2%;
-        justify-content: center;
-        flex-direction: column;
-        text-align: center;
-    } 
+  .wrapperTextType {
+    height: 250px;
+    width: 35%;
+    align-self: center;
 
-    .Tecnoloader{
-        width: 21%;
-        align-self: center;
-        padding-left: 10px;
-    }
-
-    .introbigTitle {
-        font-size: 2rem;
-        text-align: center;
-       
-    }
-
-        .wrapperTextType{
-            height: 250px;
-            width: 35%;
-            align-self: center;
-           
-          }
-    
   }
-  
+
+}

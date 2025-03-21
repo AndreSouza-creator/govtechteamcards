@@ -96,7 +96,7 @@
    backdrop-filter: blur(5px);
    border-radius: 20px;
    text-align: center;
-   border: solid 1px #dddddd0b;
+   border: solid 1px #dddddd37;
    margin-top: 5%;
 }
 
@@ -226,7 +226,7 @@
 }
 
 #logo3d{
-    width: 70px;
+    width: 45px;
     height: 70px;
     margin-top: -83px;
     margin-left: 130px;
@@ -240,7 +240,7 @@
 .custom{
     margin-top: 10px;
     background: linear-gradient(rgba(255, 108, 10, 0), rgba(8, 5, 1, 0.205));
-    border: solid 1px #ffffff1d;
+    border: solid 1px #ffffff2f;
     border-radius: 15px;
     margin-bottom: 5%;
     padding-top: 5px;
