@@ -61,7 +61,7 @@ const MemberDetail = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowIntro(false);
-    }, 1000); // 3 segundos
+    }, 4000); // 3 segundos
 
     return () => clearTimeout(timer); // Limpa o timer ao desmontar
   }, []);
@@ -72,7 +72,7 @@ const MemberDetail = () => {
         <Intro />
       ) : (
         <>
-             <video autoPlay muted loop id="myVideoMobile">
+          <video autoPlay muted loop id="myVideoMobile">
             <source src={FundoBGMobile} type="video/mp4" />
           </video>
           <video autoPlay muted loop id="myVideoDesktop">
