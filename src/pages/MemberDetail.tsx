@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import Intro from './Intro/intro';
 import logoWhats from './../img/image.png'
 import FundoBG from './../img/FundoBGTecnoDesktop.mp4'
-import FundoBGMobile from './../img/FundoBGTecnoMobile.mp4'
+import logo3d from './../img/tecno3d.png'
 
 const MemberDetail = () => {
   const { name } = useParams();
@@ -72,19 +72,13 @@ const MemberDetail = () => {
         <Intro />
       ) : (
         <>
-          <video autoPlay muted loop id="myVideoMobile">
-            <source src={FundoBGMobile} type="video/mp4" />
-          </video>
+
+            
           <video autoPlay muted loop id="myVideoDesktop">
             <source src={FundoBG} type="video/mp4" />
           </video>
           <div className="min-h-screen  flex flex-col items-center p-6" id="customMemberDetailContent">
-            <img src={logo} id="logoDetails"></img>
-            <h1 id="bigtitle">Conheça o time GovTech</h1>
-            <h2 className="text-white text-lg max-w-2xl mx-auto">
-              Os profissionais da Tecnocomp dedicados a entregar
-              soluções inovadoras para o setor governamental.
-            </h2>
+          <img src={logo} id='logoDetails' />
             <br />
             <div className="w-full max-w-md" id="mainDetailedCard">
               <div className='wrapperButton'>
@@ -97,18 +91,23 @@ const MemberDetail = () => {
                 )}
               </div>
               {/* Profile Picture */}
-              <div className="w-40 h-40 mx-auto rounded-full overflow-hidden border-4 border-white shadow-lg mb-6 mt-12">
-                {member.image ? (
-                  <img
-                    src={member.image}
-                    alt={member.nome}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-orange-600 text-white text-4xl">
-                    {initials}
-                  </div>
-                )}
+              <div className='Profile3d'>
+                <div className="w-40 h-40 mx-auto rounded-full overflow-hidden border-4 border-white shadow-lg mb-6 mt-12">
+                  {member.image ? (
+                    <img
+                      src={member.image}
+                      alt={member.nome}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-orange-600 text-white text-4xl">
+                      {initials}
+                    </div>
+                  )}
+                </div>
+                <div className='logowrapper'>
+                <img src={logo3d} id="logo3d"></img>
+                </div>
               </div>
 
               {/* Name and Title */}
@@ -119,11 +118,9 @@ const MemberDetail = () => {
               {/* Contact Info */}
               <div className="custom">
                 <div className="p-6">
-                  <h2 className="text-xl font-semibold mb-4">Informações de Contato</h2>
-
                   {member.tel && (
                     <div className="mb-3">
-                      <p className="text-sm text-white-500">Telefone</p>
+                      <p className="text-sm text-white-500">Contato</p>
                       <p>{member.tel}</p>
                     </div>
                   )}
