@@ -111,7 +111,7 @@ const MemberDetail = () => {
               {/* Name and Title */}
               <div className="text-center">
                 <h1 className="text-white text-3xl font-bold mb-2">{member.nome}</h1>
-                <p id="cargo">{member.cargo}</p>
+                <p >{member.cargo}</p>
               </div>
             
               {/* Contact Info */}

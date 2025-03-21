@@ -36,7 +36,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member }) => {
   return (
     <div className="w-full hover:shadow-md transition-all duration-3000">
       <div className="p-6 flex flex-col items-center text-center" id="customteamCard">
-        <Avatar className="w-40 h-40 mb-4 border-2 border-orange-300">
+        <Avatar className="avatarTeamPage">
           {member.image ? (
             <AvatarImage src={member.image} alt={member.nome} />
           ) : (
@@ -45,13 +45,13 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member }) => {
             </AvatarFallback>
           )}
         </Avatar>
-        <h3 className="text-lg mb-1">{member.nome}</h3>
-        <h2 className="text-md text-600 mb-4">{member.cargo}</h2>
+        
+        <h3 className="bigtitle nometeam">{member.nome}</h3>
+        <h2 className="bigtitle cargo">{member.cargo}</h2>
         <Button 
           onClick={handleClick}
           id="seeCard"
         >
-          Ver cartão de visita digital
         </Button>
       </div>
     </div>

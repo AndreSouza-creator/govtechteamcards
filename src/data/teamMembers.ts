@@ -23,7 +23,7 @@ export interface TeamMember {
 export const teamMembers: TeamMember[] = [
   {
     nome: "Jhonatas Rocha",
-    cargo: "Head Govtech",
+    cargo: "Diretor",
     tel: "+55 11 98080-3677",
     email: "jhonatas.rocha@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
@@ -32,7 +32,7 @@ export const teamMembers: TeamMember[] = [
   },
   {
     nome: "Mauro Cesar Marsura",
-    cargo: "Pre-sales Manager",
+    cargo: "Gerente de pre-vendas",
     tel: "+55 11 98965-4809",
     email: "mauro.marsura@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
