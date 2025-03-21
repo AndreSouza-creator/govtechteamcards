@@ -13,7 +13,7 @@
 
 
 #logoDetails{
-    width: 50%;
+    width: 60%;
     margin-top: 2%;
     margin-bottom: 2%;
 }
@@ -90,14 +90,14 @@
 #mainDetailedCard{
    color: white;
    padding: 20px;
-   padding-top: 15px;
    background: linear-gradient(#000000, rgba(255, 255, 255, 0.056)) ;
    backdrop-filter: blur(5px);
    border-radius: 20px;
    text-align: center;
    border: solid 1px #dddddd37;
-   padding-top: 5%;
+   padding-top: 10%;
    padding-bottom: 3%;
+   margin-top: 10%;
 }
 
 #customteamCard span{
@@ -217,8 +217,6 @@
     z-index: -1;
 }
 
-
-
 .logowrapper{
     width: 100%;
     display: flex;
@@ -289,6 +287,7 @@
     #mainDetailedCard{
         padding-top: 2%;
         padding-bottom: 3%;
+        margin-top: 0%;
     }
 }
 
