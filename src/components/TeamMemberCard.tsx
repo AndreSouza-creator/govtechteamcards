@@ -23,9 +23,10 @@ import "./../pages/CSS/teamstyle.css"
 interface TeamMemberCardProps {
   member: TeamMember;
   onDelete?: (member: TeamMember) => void;
+  onEdit?: (member: TeamMember) => void;
 }
 
-const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onDelete }) => {
+const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onDelete, onEdit }) => {
   const navigate = useNavigate();
   const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -50,7 +51,9 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onDelete }) => 
 
   const handleEdit = (e) => {
     e.stopPropagation();
-    navigate(`/edit-team-member/${encodeURIComponent(member.nome)}`);
+    if (onEdit) {
+      onEdit(member);
+    }
   };
 
   const handleDelete = (e) => {

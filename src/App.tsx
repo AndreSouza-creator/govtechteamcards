@@ -10,8 +10,6 @@ import MemberDetail from "./pages/MemberDetail";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import HeaderMenu from "./components/HeaderMenu";
-import AddTeamMember from "./pages/AddTeamMember";
-import EditTeamMember from "./pages/EditTeamMember";
 
 const queryClient = new QueryClient();
 
@@ -31,14 +29,6 @@ const App = () => (
                 <Team />
               </HeaderMenu>
             } 
-          />
-          <Route 
-            path="/add-team-member" 
-            element={<AddTeamMember />} 
-          />
-          <Route 
-            path="/edit-team-member/:name" 
-            element={<EditTeamMember />} 
           />
           <Route path="/member/:name" element={<MemberDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
