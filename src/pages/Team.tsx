@@ -47,13 +47,26 @@ const Team = () => {
     "Govtech",
     "Marketing",
     "Inovação",
-    "ServiceDesk",
-    "Grandes Contas",
+    "Grandes contas",
     "Varejo",
     "Financeiro",
     "Fiscal",
-    "Projetos"
+    "Saúde",
+    "Projetos",
+    "Corporativo",
   ];
+
+/*   | "Govtech" 
+  | "Marketing" 
+  | "Inovação"
+  | "Grandes contas" 
+  | "Varejo" 
+  | "Financeiro" 
+  | "Fiscal"
+  | "Saúde"
+  | "Projetos"
+  | "Corporativo" 
+  | "Projetos"; */
   
   const resetNewMember = () => {
     setNewMember({
@@ -218,7 +231,7 @@ const Team = () => {
         
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {members.map((member, index) => (
-            <TeamMemberCard 
+            <TeamMemberCard
               key={index} 
               member={member} 
               onDelete={isAdmin ? handleDeleteMember : undefined}

@@ -14,13 +14,14 @@ import leonardo from "./../img/TeamPictures/LeonardoAmorin.png";
 export type Departamento = 
   | "Govtech" 
   | "Marketing" 
-  | "Inovação" 
-  | "ServiceDesk" 
-  | "Grandes Contas" 
+  | "Inovação"
+  | "Grandes contas" 
   | "Varejo" 
   | "Financeiro" 
-  | "Fiscal" 
-  | "Projetos";
+  | "Fiscal"
+  | "Saúde"
+  | "Projetos"
+  | "Corporativo";
 
 export interface TeamMember {
   nome: string;
@@ -103,7 +104,7 @@ export const teamMembers: TeamMember[] = [
     email: "andre.silva@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
-    departamento: "Inovação",
+    departamento: "Govtech",
     image: andre
   },
   {
@@ -113,7 +114,7 @@ export const teamMembers: TeamMember[] = [
     email: "marcos.revite@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
-    departamento: "Grandes Contas",
+    departamento: "Govtech",
     image: marcos
   },
   {
@@ -123,7 +124,7 @@ export const teamMembers: TeamMember[] = [
     email: "josimar.caitano@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
-    departamento: "ServiceDesk",
+    departamento: "Govtech",
     image: josimar
   },
   {
@@ -133,7 +134,7 @@ export const teamMembers: TeamMember[] = [
     email: "natalia.leal@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
-    departamento: "Projetos",
+    departamento: "Govtech",
     image: natalia
   },
   {

@@ -22,6 +22,7 @@ import "./../pages/CSS/teamstyle.css"
 
 interface TeamMemberCardProps {
   member: TeamMember;
+  departamento: string;
   onDelete?: (member: TeamMember) => void;
   onEdit?: (member: TeamMember) => void;
 }
@@ -117,7 +118,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onDelete, onEdi
         
         <h3 className="bigtitle nometeam">{member.nome}</h3>
         <h2 className="bigtitle cargo">{member.cargo}</h2>
-        <span className="text-sm text-gray-400 mt-1">{member.departamento}</span>
+        <h2 className="bigtitle departamento">{member.departamento}</h2>
         <Button 
           onClick={handleClick}
           id="seeCard"

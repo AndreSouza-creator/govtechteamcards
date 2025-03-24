@@ -67,7 +67,7 @@ const MemberDetail = () => {
   }, []);
 
   return (
-    <div>
+    <>
       {showIntro ? (
         <Intro />
       ) : (
@@ -184,7 +184,7 @@ const MemberDetail = () => {
           </div>
         </>
       )}
-    </div>
+    </>
     
   );
 };
