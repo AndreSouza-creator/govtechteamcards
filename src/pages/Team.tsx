@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { teamMembers } from '@/data/teamMembers';
+import { teamMembers, Departamento } from '@/data/teamMembers';
 import TeamMemberCard from '@/components/TeamMemberCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,6 +15,13 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import "./CSS/teamstyle.css";
 
 const Team = () => {
@@ -30,10 +37,23 @@ const Team = () => {
     email: '',
     site: 'www.tecnocomp.com.br',
     portfolio: 'www.tecnocomp.com.br/portfiolio',
+    departamento: 'Govtech' as Departamento,
     image: ''
   });
   
   const [memberToEdit, setMemberToEdit] = useState(null);
+  
+  const departamentos: Departamento[] = [
+    "Govtech",
+    "Marketing",
+    "Inovação",
+    "ServiceDesk",
+    "Grandes Contas",
+    "Varejo",
+    "Financeiro",
+    "Fiscal",
+    "Projetos"
+  ];
   
   const resetNewMember = () => {
     setNewMember({
@@ -43,6 +63,7 @@ const Team = () => {
       email: '',
       site: 'www.tecnocomp.com.br',
       portfolio: 'www.tecnocomp.com.br/portfiolio',
+      departamento: 'Govtech',
       image: ''
     });
   };
@@ -58,6 +79,20 @@ const Team = () => {
       setNewMember({
         ...newMember,
         [name]: value
+      });
+    }
+  };
+  
+  const handleSelectChange = (value, field) => {
+    if (openEditModal && memberToEdit) {
+      setMemberToEdit({
+        ...memberToEdit,
+        [field]: value
+      });
+    } else {
+      setNewMember({
+        ...newMember,
+        [field]: value
       });
     }
   };
@@ -102,16 +137,19 @@ const Team = () => {
       return;
     }
 
+    // Store original name to find member
+    const originalNome = memberToEdit.originalNome || memberToEdit.nome;
+    
     // Find and update the team member
-    const memberIndex = teamMembers.findIndex(m => m.nome === memberToEdit.originalNome);
+    const memberIndex = teamMembers.findIndex(m => m.nome === originalNome);
     
     if (memberIndex !== -1) {
-      teamMembers[memberIndex] = {
-        ...memberToEdit
-      };
+      // Create a new object without the originalNome property
+      const { originalNome: _, ...memberWithoutOriginalNome } = memberToEdit;
       
-      // Remove the temporary property we added
-      delete teamMembers[memberIndex].originalNome;
+      teamMembers[memberIndex] = {
+        ...memberWithoutOriginalNome
+      };
       
       setMembers([...teamMembers]);
       
@@ -228,6 +266,25 @@ const Team = () => {
                 </div>
 
                 <div>
+                  <Label htmlFor="departamento" className="text-white">Departamento *</Label>
+                  <Select 
+                    value={newMember.departamento} 
+                    onValueChange={(value) => handleSelectChange(value, 'departamento')}
+                  >
+                    <SelectTrigger className="bg-gray-800 text-white border-gray-700">
+                      <SelectValue placeholder="Selecione um departamento" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 text-white border-gray-700">
+                      {departamentos.map((departamento) => (
+                        <SelectItem key={departamento} value={departamento}>
+                          {departamento}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
                   <Label htmlFor="tel" className="text-white">Telefone</Label>
                   <Input
                     id="tel"
@@ -312,6 +369,25 @@ const Team = () => {
                       required
                       className="bg-gray-800 text-white border-gray-700"
                     />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="edit-departamento" className="text-white">Departamento *</Label>
+                    <Select 
+                      value={memberToEdit.departamento} 
+                      onValueChange={(value) => handleSelectChange(value, 'departamento')}
+                    >
+                      <SelectTrigger className="bg-gray-800 text-white border-gray-700">
+                        <SelectValue placeholder="Selecione um departamento" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 text-white border-gray-700">
+                        {departamentos.map((departamento) => (
+                          <SelectItem key={departamento} value={departamento}>
+                            {departamento}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div>
