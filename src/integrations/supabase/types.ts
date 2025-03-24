@@ -9,7 +9,48 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      team_members: {
+        Row: {
+          administrador: boolean | null
+          cargo: string
+          departamento: Database["public"]["Enums"]["departamento"]
+          email: string
+          id: string
+          image_url: string | null
+          nome: string
+          portfolio: string | null
+          site: string | null
+          tel: string | null
+          user_id: string | null
+        }
+        Insert: {
+          administrador?: boolean | null
+          cargo: string
+          departamento: Database["public"]["Enums"]["departamento"]
+          email: string
+          id?: string
+          image_url?: string | null
+          nome: string
+          portfolio?: string | null
+          site?: string | null
+          tel?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          administrador?: boolean | null
+          cargo?: string
+          departamento?: Database["public"]["Enums"]["departamento"]
+          email?: string
+          id?: string
+          image_url?: string | null
+          nome?: string
+          portfolio?: string | null
+          site?: string | null
+          tel?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +59,18 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      departamento:
+        | "Govtech"
+        | "Marketing"
+        | "Inovação"
+        | "ServiceDesk"
+        | "Grandes Contas"
+        | "Varejo"
+        | "Financeiro"
+        | "Fiscal"
+        | "Saúde"
+        | "Projetos"
+        | "Corporativo"
     }
     CompositeTypes: {
       [_ in never]: never

@@ -1,11 +1,10 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TeamMember, teamMembers } from '@/data/teamMembers';
 import { Edit, Trash2 } from 'lucide-react';
+import { TeamMember } from '@/types/supabase';
 import { 
   AlertDialog,
   AlertDialogAction,
@@ -17,20 +16,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { toast } from '@/hooks/use-toast';
-import "./../pages/CSS/teamstyle.css"
+import "./../pages/CSS/teamstyle.css";
 
 interface TeamMemberCardProps {
   member: TeamMember;
-  departamento: string;
   onDelete?: (member: TeamMember) => void;
   onEdit?: (member: TeamMember) => void;
 }
 
 const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onDelete, onEdit }) => {
   const navigate = useNavigate();
-  const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const initials = member.nome
     .split(' ')
@@ -38,7 +33,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onDelete, onEdi
     .join('');
 
   const handleClick = () => {
-    const formatarNome = (nome) =>
+    const formatarNome = (nome: string) =>
       nome
         .normalize("NFD") // Separa acentos das letras
         .replace(/[\u0300-\u036f]/g, "") // Remove acentos
@@ -50,14 +45,14 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onDelete, onEdi
     navigate(`/member/${encodeURIComponent(nomeFormatado)}`);
   };
 
-  const handleEdit = (e) => {
+  const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (onEdit) {
       onEdit(member);
     }
   };
 
-  const handleDelete = (e) => {
+  const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (onDelete) {
       onDelete(member);
@@ -67,7 +62,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onDelete, onEdi
   return (
     <div className="w-full hover:shadow-md transition-all duration-3000">
       <div className="p-6 flex flex-col items-center text-center relative" id="customteamCard">
-        {isAdmin && (
+        {onEdit && onDelete && (
           <div className="absolute top-2 right-2 flex space-x-2">
             <Button 
               variant="ghost" 
@@ -107,8 +102,8 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onDelete, onEdi
         )}
         
         <Avatar className="avatarTeamPage">
-          {member.image ? (
-            <AvatarImage src={member.image} alt={member.nome} />
+          {member.image_url ? (
+            <AvatarImage src={member.image_url} alt={member.nome} />
           ) : (
             <AvatarFallback className="bg-orange-500 text-white text-xl">
               {initials}

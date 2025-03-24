@@ -1,12 +1,15 @@
 
-import React, { useState } from 'react';
-import { teamMembers, Departamento } from '@/data/teamMembers';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import TeamMemberCard from '@/components/TeamMemberCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { UserPlus, X } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
+import { TeamMember, Departamento } from '@/types/supabase';
+import { fetchTeamMembers, deleteTeamMember, getDepartamentos, updateTeamMember, uploadTeamMemberImage } from '@/services/teamMemberService';
+import { useAuth } from '@/contexts/AuthContext';
+import { UserPlus, X, Loader2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -25,120 +28,82 @@ import {
 import "./CSS/teamstyle.css";
 
 const Team = () => {
-  const [members, setMembers] = useState(teamMembers);
-  const [openAddModal, setOpenAddModal] = useState(false);
+  const [members, setMembers] = useState<TeamMember[]>([]);
   const [openEditModal, setOpenEditModal] = useState(false);
-  const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+  const [memberToEdit, setMemberToEdit] = useState<TeamMember | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   
-  const [newMember, setNewMember] = useState({
-    nome: '',
-    cargo: '',
-    tel: '',
-    email: '',
-    site: 'www.tecnocomp.com.br',
-    portfolio: 'www.tecnocomp.com.br/portfiolio',
-    departamento: 'Govtech' as Departamento,
-    image: ''
-  });
+  const { isAdmin } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   
-  const [memberToEdit, setMemberToEdit] = useState(null);
-  
-  const departamentos: Departamento[] = [
-    "Govtech",
-    "Marketing",
-    "Inovação",
-    "Grandes contas",
-    "Varejo",
-    "Financeiro",
-    "Fiscal",
-    "Saúde",
-    "Projetos",
-    "Corporativo",
-  ];
+  const departamentos = getDepartamentos();
 
-/*   | "Govtech" 
-  | "Marketing" 
-  | "Inovação"
-  | "Grandes contas" 
-  | "Varejo" 
-  | "Financeiro" 
-  | "Fiscal"
-  | "Saúde"
-  | "Projetos"
-  | "Corporativo" 
-  | "Projetos"; */
+  useEffect(() => {
+    loadTeamMembers();
+  }, []);
   
-  const resetNewMember = () => {
-    setNewMember({
-      nome: '',
-      cargo: '',
-      tel: '',
-      email: '',
-      site: 'www.tecnocomp.com.br',
-      portfolio: 'www.tecnocomp.com.br/portfiolio',
-      departamento: 'Govtech',
-      image: ''
-    });
-  };
-  
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    if (openEditModal && memberToEdit) {
-      setMemberToEdit({
-        ...memberToEdit,
-        [name]: value
-      });
-    } else {
-      setNewMember({
-        ...newMember,
-        [name]: value
-      });
-    }
-  };
-  
-  const handleSelectChange = (value, field) => {
-    if (openEditModal && memberToEdit) {
-      setMemberToEdit({
-        ...memberToEdit,
-        [field]: value
-      });
-    } else {
-      setNewMember({
-        ...newMember,
-        [field]: value
-      });
-    }
-  };
-  
-  const handleAddMember = (e) => {
-    e.preventDefault();
-    
-    // Validation
-    if (!newMember.nome || !newMember.cargo || !newMember.email) {
+  const loadTeamMembers = async () => {
+    try {
+      setIsLoading(true);
+      const data = await fetchTeamMembers();
+      setMembers(data);
+    } catch (error) {
+      console.error('Failed to load team members:', error);
       toast({
         title: "Erro",
-        description: "Por favor, preencha os campos obrigatórios (Nome, Cargo e Email).",
+        description: "Falha ao carregar membros da equipe.",
         variant: "destructive"
       });
-      return;
+    } finally {
+      setIsLoading(false);
     }
-
-    // Add new member to the team members array
-    teamMembers.push(newMember);
-    setMembers([...teamMembers]);
-    
-    toast({
-      title: "Sucesso",
-      description: `${newMember.nome} foi adicionado à equipe.`
-    });
-    
-    // Reset form and close modal
-    resetNewMember();
-    setOpenAddModal(false);
   };
   
-  const handleEditMember = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (memberToEdit) {
+      setMemberToEdit({
+        ...memberToEdit,
+        [name]: value
+      });
+    }
+  };
+  
+  const handleSelectChange = (value: string, field: string) => {
+    if (memberToEdit) {
+      setMemberToEdit({
+        ...memberToEdit,
+        [field]: value
+      });
+    }
+  };
+  
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Check file size (2MB limit)
+      const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
+      if (file.size > maxSizeInBytes) {
+        toast({
+          title: "Erro",
+          description: "O tamanho máximo da imagem é 2MB.",
+          variant: "destructive"
+        });
+        e.target.value = '';
+        return;
+      }
+      
+      setSelectedImage(file);
+    }
+  };
+  
+  const handleEditMember = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!memberToEdit) return;
     
     // Validation
     if (!memberToEdit.nome || !memberToEdit.cargo || !memberToEdit.email) {
@@ -150,59 +115,81 @@ const Team = () => {
       return;
     }
 
-    // Store original name to find member
-    const originalNome = memberToEdit.originalNome || memberToEdit.nome;
-    
-    // Find and update the team member
-    const memberIndex = teamMembers.findIndex(m => m.nome === originalNome);
-    
-    if (memberIndex !== -1) {
-      // Create a new object without the originalNome property
-      const { originalNome: _, ...memberWithoutOriginalNome } = memberToEdit;
+    try {
+      setIsSubmitting(true);
       
-      teamMembers[memberIndex] = {
-        ...memberWithoutOriginalNome
-      };
+      // If there's a new image, upload it first
+      let updatedImageUrl = memberToEdit.image_url;
       
-      setMembers([...teamMembers]);
+      if (selectedImage) {
+        const fileName = `${Date.now()}-${selectedImage.name}`;
+        updatedImageUrl = await uploadTeamMemberImage(selectedImage, fileName);
+      }
+      
+      // Update the member with the new data
+      const updatedMember = await updateTeamMember(memberToEdit.id, {
+        ...memberToEdit,
+        image_url: updatedImageUrl
+      });
+      
+      // Update the local state
+      setMembers(members.map(m => m.id === updatedMember.id ? updatedMember : m));
       
       toast({
         title: "Sucesso",
-        description: `Informações de ${memberToEdit.nome} foram atualizadas.`
+        description: `Informações de ${updatedMember.nome} foram atualizadas.`
       });
       
-      // Close modal
+      // Reset and close modal
+      setSelectedImage(null);
       setOpenEditModal(false);
       setMemberToEdit(null);
+      
+    } catch (error) {
+      console.error('Error updating team member:', error);
+      toast({
+        title: "Erro",
+        description: "Falha ao atualizar o membro da equipe.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
   
-  const handleDeleteMember = (memberToDelete) => {
-    // Find the index of the member to delete
-    const memberIndex = teamMembers.findIndex(m => m.nome === memberToDelete.nome);
-    
-    // Remove the member from the array
-    if (memberIndex !== -1) {
-      teamMembers.splice(memberIndex, 1);
-      setMembers([...teamMembers]);
+  const handleDeleteMember = async (memberToDelete: TeamMember) => {
+    try {
+      await deleteTeamMember(memberToDelete.id);
+      
+      // Remove from local state
+      setMembers(members.filter(m => m.id !== memberToDelete.id));
       
       toast({
         title: "Membro excluído",
         description: `${memberToDelete.nome} foi removido da equipe com sucesso.`
       });
+    } catch (error) {
+      console.error('Error deleting team member:', error);
+      toast({
+        title: "Erro",
+        description: "Falha ao excluir o membro da equipe.",
+        variant: "destructive"
+      });
     }
   };
   
-  const openEditModalForMember = (member) => {
-    // Create a copy of the member with an additional property to store the original name
-    // This helps us find the member later if the name changes
-    const memberForEdit = {
-      ...member,
-      originalNome: member.nome
-    };
-    setMemberToEdit(memberForEdit);
+  const openEditModalForMember = (member: TeamMember) => {
+    setMemberToEdit(member);
     setOpenEditModal(true);
   };
+  
+  if (isLoading) {
+    return (
+      <div className="content flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+      </div>
+    );
+  }
   
   return (
     <div className="content">
@@ -217,10 +204,7 @@ const Team = () => {
           </div>
           {isAdmin && (
             <Button 
-              onClick={() => {
-                resetNewMember();
-                setOpenAddModal(true);
-              }}
+              onClick={() => navigate('/add-team-member')}
               className="flex items-center gap-2"
             >
               <UserPlus className="h-4 w-4" />
@@ -230,120 +214,15 @@ const Team = () => {
         </header>
         
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {members.map((member, index) => (
+          {members.map((member) => (
             <TeamMemberCard
-              key={index} 
+              key={member.id} 
               member={member} 
               onDelete={isAdmin ? handleDeleteMember : undefined}
               onEdit={isAdmin ? openEditModalForMember : undefined}
             />
           ))}
         </div>
-        
-        {/* Add Member Modal */}
-        <Dialog open={openAddModal} onOpenChange={setOpenAddModal}>
-          <DialogContent className="bg-black/80 border-gray-700 text-white max-w-2xl">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-white">Adicionar Novo Membro da Equipe</DialogTitle>
-              <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 text-white">
-                <X className="h-4 w-4" />
-              </DialogClose>
-            </DialogHeader>
-            
-            <form onSubmit={handleAddMember} className="space-y-6">
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="nome" className="text-white">Nome Completo *</Label>
-                  <Input
-                    id="nome"
-                    name="nome"
-                    value={newMember.nome}
-                    onChange={handleInputChange}
-                    placeholder="Nome completo do colaborador"
-                    required
-                    className="bg-gray-800 text-white border-gray-700"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="cargo" className="text-white">Cargo *</Label>
-                  <Input
-                    id="cargo"
-                    name="cargo"
-                    value={newMember.cargo}
-                    onChange={handleInputChange}
-                    placeholder="Cargo ou função"
-                    required
-                    className="bg-gray-800 text-white border-gray-700"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="departamento" className="text-white">Departamento *</Label>
-                  <Select 
-                    value={newMember.departamento} 
-                    onValueChange={(value) => handleSelectChange(value, 'departamento')}
-                  >
-                    <SelectTrigger className="bg-gray-800 text-white border-gray-700">
-                      <SelectValue placeholder="Selecione um departamento" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-800 text-white border-gray-700">
-                      {departamentos.map((departamento) => (
-                        <SelectItem key={departamento} value={departamento}>
-                          {departamento}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="tel" className="text-white">Telefone</Label>
-                  <Input
-                    id="tel"
-                    name="tel"
-                    value={newMember.tel}
-                    onChange={handleInputChange}
-                    placeholder="+55 00 00000-0000"
-                    className="bg-gray-800 text-white border-gray-700"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="email" className="text-white">Email *</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={newMember.email}
-                    onChange={handleInputChange}
-                    placeholder="email@tecnocomp.com.br"
-                    required
-                    className="bg-gray-800 text-white border-gray-700"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="image" className="text-white">URL da Imagem (opcional)</Label>
-                  <Input
-                    id="image"
-                    name="image"
-                    value={newMember.image}
-                    onChange={handleInputChange}
-                    placeholder="Link para foto do colaborador"
-                    className="bg-gray-800 text-white border-gray-700"
-                  />
-                </div>
-              </div>
-
-              <DialogFooter>
-                <Button type="submit" className="w-full">
-                  Adicionar Membro
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
         
         {/* Edit Member Modal */}
         <Dialog open={openEditModal} onOpenChange={setOpenEditModal}>
@@ -408,7 +287,7 @@ const Team = () => {
                     <Input
                       id="edit-tel"
                       name="tel"
-                      value={memberToEdit.tel}
+                      value={memberToEdit.tel || ''}
                       onChange={handleInputChange}
                       placeholder="+55 00 00000-0000"
                       className="bg-gray-800 text-white border-gray-700"
@@ -430,21 +309,46 @@ const Team = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="edit-image" className="text-white">URL da Imagem (opcional)</Label>
+                    <Label htmlFor="edit-image" className="text-white">Imagem</Label>
                     <Input
                       id="edit-image"
                       name="image"
-                      value={memberToEdit.image}
-                      onChange={handleInputChange}
-                      placeholder="Link para foto do colaborador"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
                       className="bg-gray-800 text-white border-gray-700"
                     />
+                    <p className="text-xs text-gray-400 mt-1">Tamanho máximo: 2MB</p>
+                    
+                    {memberToEdit.image_url && !selectedImage && (
+                      <div className="mt-2">
+                        <p className="text-sm">Imagem atual:</p>
+                        <div className="h-16 w-16 mt-1 rounded-full overflow-hidden">
+                          <img 
+                            src={memberToEdit.image_url} 
+                            alt={memberToEdit.nome}
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 <DialogFooter>
-                  <Button type="submit" className="w-full">
-                    Salvar Alterações
+                  <Button 
+                    type="submit" 
+                    className="w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Salvando...
+                      </>
+                    ) : (
+                      'Salvar Alterações'
+                    )}
                   </Button>
                 </DialogFooter>
               </form>
