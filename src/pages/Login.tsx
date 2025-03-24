@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,9 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { useToast } from '@/components/ui/use-toast';
 
 const users = {
-  admin: 'govtech@2025',
-  jhonatas: 'Jhonatas@Govhead',
-  mauro: 'securepass',
+  admin: { password: 'govtech@2025', isAdmin: true },
+  jhonatas: { password: 'Jhonatas@Govhead', isAdmin: true },
+  mauro: { password: 'securepass', isAdmin: false },
 };
 
 const Login = () => {
@@ -20,15 +21,15 @@ const Login = () => {
   const { toast } = useToast();  
   const from = location.state?.from?.pathname || '/';
 
-
-
   const handleLogin = (e) => {
     e.preventDefault();
     setIsLoading(true);
     
     setTimeout(() => {
-      if (users[username] && users[username] === password) {
+      if (users[username] && users[username].password === password) {
         sessionStorage.setItem('isAuthenticated', 'true');
+        sessionStorage.setItem('isAdmin', users[username].isAdmin ? 'true' : 'false');
+        sessionStorage.setItem('username', username);
         navigate('/team', { replace: true });
       } else {
         toast({

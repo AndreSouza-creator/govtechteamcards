@@ -18,6 +18,7 @@ export interface TeamMember {
   site: string;
   portfolio: string;
   image?: string;
+  administrador?: boolean;
 }
 
 export const teamMembers: TeamMember[] = [
@@ -28,7 +29,8 @@ export const teamMembers: TeamMember[] = [
     email: "jhonatas.rocha@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
-    image: jhonatas
+    image: jhonatas,
+    administrador: true
   },
   {
     nome: "Mauro Cesar Marsura",
