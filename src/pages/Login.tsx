@@ -1,35 +1,46 @@
 
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/ui/use-toast';
+
+const users = {
+  admin: { password: 'govtech@2025', isAdmin: true },
+  jhonatas: { password: 'Jhonatas@Govhead', isAdmin: true },
+  mauro: { password: 'securepass', isAdmin: false },
+};
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { signIn, user, loading } = useAuth();
-  
+  const { toast } = useToast();  
   const from = location.state?.from?.pathname || '/';
 
-  useEffect(() => {
-    // If user is already logged in, redirect to team page
-    if (user && !loading) {
-      navigate('/team', { replace: true });
-    }
-  }, [user, loading, navigate]);
-
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = (e) => {
     e.preventDefault();
-    await signIn(username, password);
+    setIsLoading(true);
+    
+    setTimeout(() => {
+      if (users[username] && users[username].password === password) {
+        sessionStorage.setItem('isAuthenticated', 'true');
+        sessionStorage.setItem('isAdmin', users[username].isAdmin ? 'true' : 'false');
+        sessionStorage.setItem('username', username);
+        navigate('/team', { replace: true });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Erro de Autenticação",
+          description: "Usuário ou senha incorretos.",
+        });
+      }
+      setIsLoading(false);
+    }, 1000);
   };
-
-  if (loading) {
-    return <div className="flex justify-center items-center h-screen">Carregando...</div>;
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-500 to-orange-400 flex items-center justify-center p-4">
@@ -42,12 +53,11 @@ const Login = () => {
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <label className="text-sm font-medium" htmlFor="username">
-                Email
+                Usuário
               </label>
               <Input
                 id="username"
-                type="email"
-                placeholder="seu.email@tecnocomp.com.br"
+                placeholder="Usuário"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -69,9 +79,9 @@ const Login = () => {
             <Button 
               type="submit" 
               className="w-full bg-orange-500 hover:bg-orange-600"
-              disabled={loading}
+              disabled={isLoading}
             >
-              {loading ? "Autenticando..." : "Entrar"}
+              {isLoading ? "Autenticando..." : "Entrar"}
             </Button>
           </form>
         </CardContent>

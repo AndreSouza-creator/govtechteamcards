@@ -1,62 +1,32 @@
 
 import { useParams, useNavigate } from 'react-router-dom';
+import { teamMembers } from '@/data/teamMembers';
 import { Button } from '@/components/ui/button';
-import "./CSS/teamstyle.css";
-import logo from "./../img/Logo.svg";
+import "./CSS/teamstyle.css"
+import logo from "./../img/Logo.svg"
 import { useEffect, useState } from 'react';
 import Intro from './Intro/intro';
-import logoWhats from './../img/image.png';
-import FundoBG from './../img/FundoBGTecnoDesktop.mp4';
-import logo3d from './../img/tecno3d.png';
-import { fetchTeamMemberByName } from '@/services/teamMemberService';
-import { TeamMember } from '@/types/supabase';
-import { useAuth } from '@/contexts/AuthContext';
-import { Loader2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import logoWhats from './../img/image.png'
+import FundoBG from './../img/FundoBGTecnoDesktop.mp4'
+import logo3d from './../img/tecno3d.png'
 
 const MemberDetail = () => {
   const { name } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const isAuthenticated = !!user;
-  const { toast } = useToast();
-  
+  const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
   const [showIntro, setShowIntro] = useState(true);
-  const [member, setMember] = useState<TeamMember | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (name) {
-      fetchTeamMemberByName(decodeURIComponent(name))
-        .then(data => {
-          setMember(data);
-          setLoading(false);
-        })
-        .catch(error => {
-          console.error('Error fetching member details:', error);
-          toast({
-            title: "Erro",
-            description: "Falha ao carregar detalhes do membro da equipe.",
-            variant: "destructive"
-          });
-          setLoading(false);
-        });
-    }
-    
-    const timer = setTimeout(() => {
-      setShowIntro(false);
-    }, 5000); // 5 segundos
+  const formatarNome = (nome) =>
+    nome
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/ç/g, "c")
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .toLowerCase();
 
-    return () => clearTimeout(timer);
-  }, [name, toast]);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
-      </div>
-    );
-  }
+  const member = teamMembers.find(m =>
+    formatarNome(m.nome) === formatarNome(decodeURIComponent(name || ""))
+  );
 
   if (!member) {
     return (
@@ -78,7 +48,7 @@ const MemberDetail = () => {
     .join('');
 
   // Generate WhatsApp link
-  const generateWhatsAppLink = (phoneNumber: string, message: string) => {
+  const generateWhatsAppLink = (phoneNumber, message) => {
     // Remove any non-digit characters from phone number
     const cleanPhone = phoneNumber.replace(/\D/g, '');
     const encodedMessage = encodeURIComponent(message);
@@ -88,8 +58,16 @@ const MemberDetail = () => {
   const whatsappMessage = "Olá, " + member.nome.split(" ")[0] + ", estou entrando em contato através do cartão de visita virtual. Podemos conversar?";
   const whatsappLink = member.tel ? generateWhatsAppLink(member.tel, whatsappMessage) : '';
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowIntro(false);
+    }, 5000); // 3 segundos
+
+    return () => clearTimeout(timer); // Limpa o timer ao desmontar
+  }, []);
+
   return (
-    <>
+    <div>
       {showIntro ? (
         <Intro />
       ) : (
@@ -97,8 +75,8 @@ const MemberDetail = () => {
           <video autoPlay muted loop id="myVideoDesktop">
             <source src={FundoBG} type="video/mp4" />
           </video>
-          <div className="min-h-screen flex flex-col items-center p-6" id="customMemberDetailContent">
-            <img src={logo} id='logoDetails' alt="Tecnocomp Logo" />
+          <div className="min-h-screen  flex flex-col items-center p-6" id="customMemberDetailContent">
+            <img src={logo} id='logoDetails' />
 
             <div className="w-full max-w-md" id="mainDetailedCard">
               <div className='wrapperButton'>
@@ -113,9 +91,9 @@ const MemberDetail = () => {
               {/* Profile Picture */}
               <div className='Profile3d'>
                 <div className="w-40 h-40 mx-auto rounded-full overflow-hidden border-4 border-white shadow-lg">
-                  {member.image_url ? (
+                  {member.image ? (
                     <img
-                      src={member.image_url}
+                      src={member.image}
                       alt={member.nome}
                       className="w-full h-full object-cover"
                     />
@@ -126,14 +104,14 @@ const MemberDetail = () => {
                   )}
                 </div>
                 <div className='logowrapper'>
-                  <img src={logo3d} id="logo3d" alt="Tecnocomp 3D Logo" />
+                  <img src={logo3d} id="logo3d"></img>
                 </div>
               </div>
 
               {/* Name and Title */}
               <div className="text-center">
                 <h1 className="text-white text-3xl font-bold mb-2">{member.nome}</h1>
-                <p>{member.cargo}</p>
+                <p >{member.cargo}</p>
               </div>
             
               {/* Contact Info */}
@@ -173,7 +151,7 @@ const MemberDetail = () => {
                     onClick={() => window.open(whatsappLink, '_blank')}
                     id='whatstalkbutton'
                   ><span>
-                      <img src={logoWhats} id='whatslogo' alt="WhatsApp Logo" />
+                      <img src={logoWhats} id='whatslogo'></img>
                       Conversar no WhatsApp
                     </span>
                   </Button>
@@ -199,12 +177,15 @@ const MemberDetail = () => {
                 >
                   Acessar site
                 </Button>
+
+
               </div>
             </div>
           </div>
         </>
       )}
-    </>
+    </div>
+    
   );
 };
 
