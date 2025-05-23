@@ -1,10 +1,8 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TeamMember, teamMembers } from '@/data/teamMembers';
 import { Edit, Trash2 } from 'lucide-react';
 import { 
   AlertDialog,
@@ -17,19 +15,18 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { toast } from '@/hooks/use-toast';
-import "./../pages/CSS/teamstyle.css"
+import { TeamMemberFromSupabase, getImageUrl } from '@/lib/supabase';
+import "./../pages/CSS/teamstyle.css";
 
 interface TeamMemberCardProps {
-  member: TeamMember;
-  onDelete?: (member: TeamMember) => void;
-  onEdit?: (member: TeamMember) => void;
+  member: TeamMemberFromSupabase;
+  onDelete?: (member: TeamMemberFromSupabase) => void;
+  onEdit?: (member: TeamMemberFromSupabase) => void;
 }
 
 const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onDelete, onEdit }) => {
   const navigate = useNavigate();
   const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const initials = member.nome
     .split(' ')
@@ -62,6 +59,9 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onDelete, onEdi
       onDelete(member);
     }
   };
+
+  // Get image URL from Supabase storage
+  const imageUrl = member.image_url ? getImageUrl(member.image_url) : null;
 
   return (
     <div className="w-full hover:shadow-md transition-all duration-3000">
@@ -106,8 +106,8 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onDelete, onEdi
         )}
         
         <Avatar className="avatarTeamPage">
-          {member.image ? (
-            <AvatarImage src={member.image} alt={member.nome} />
+          {imageUrl ? (
+            <AvatarImage src={imageUrl} alt={member.nome} />
           ) : (
             <AvatarFallback className="bg-orange-500 text-white text-xl">
               {initials}

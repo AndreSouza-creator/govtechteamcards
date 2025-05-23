@@ -5,12 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-
-const users = {
-  admin: { password: 'govtech@2025', isAdmin: true },
-  jhonatas: { password: 'Jhonatas@Govhead', isAdmin: true },
-  mauro: { password: 'securepass', isAdmin: false },
-};
+import { login } from '@/services/authService';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -20,26 +15,33 @@ const Login = () => {
   const location = useLocation();
   const { toast } = useToast();  
   const from = location.state?.from?.pathname || '/';
+  
+  // Check if user is already authenticated
+  if (sessionStorage.getItem('isAuthenticated') === 'true') {
+    return <Navigate to="/team" />;
+  }
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     
-    setTimeout(() => {
-      if (users[username] && users[username].password === password) {
-        sessionStorage.setItem('isAuthenticated', 'true');
-        sessionStorage.setItem('isAdmin', users[username].isAdmin ? 'true' : 'false');
-        sessionStorage.setItem('username', username);
-        navigate('/team', { replace: true });
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Erro de Autenticação",
-          description: "Usuário ou senha incorretos.",
-        });
-      }
+    try {
+      // Check if username contains @ to determine if it's an email
+      // If not, append the default domain
+      const email = username.includes('@') ? username : `${username}@tecnocomp.com.br`;
+      
+      await login(email, password);
+      navigate('/team', { replace: true });
+    } catch (error) {
+      console.error('Login error:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro de Autenticação",
+        description: "Usuário ou senha incorretos.",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (

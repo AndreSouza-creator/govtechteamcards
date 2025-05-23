@@ -1,12 +1,11 @@
 
-import React, { useState } from 'react';
-import { teamMembers, Departamento } from '@/data/teamMembers';
+import React, { useState, useEffect } from 'react';
 import TeamMemberCard from '@/components/TeamMemberCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { UserPlus, X } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/use-toast';
 import {
   Dialog,
   DialogContent,
@@ -24,26 +23,33 @@ import {
 } from "@/components/ui/select";
 import "./CSS/teamstyle.css";
 
+import { supabase, TeamMemberFromSupabase } from '@/lib/supabase';
+import { fetchTeamMembers, addTeamMember, updateTeamMember, deleteTeamMember, uploadTeamMemberImage } from '@/services/teamMemberService';
+
 const Team = () => {
-  const [members, setMembers] = useState(teamMembers);
+  const [members, setMembers] = useState<TeamMemberFromSupabase[]>([]);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
   
-  const [newMember, setNewMember] = useState({
+  const [newMember, setNewMember] = useState<Omit<TeamMemberFromSupabase, 'id'>>({
     nome: '',
     cargo: '',
     tel: '',
     email: '',
     site: 'www.tecnocomp.com.br',
     portfolio: 'www.tecnocomp.com.br/portfiolio',
-    departamento: 'Govtech' as Departamento,
-    image: ''
+    departamento: 'Govtech',
+    image_url: null,
+    administrador: false
   });
   
-  const [memberToEdit, setMemberToEdit] = useState(null);
+  const [memberToEdit, setMemberToEdit] = useState<TeamMemberFromSupabase | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   
-  const departamentos: Departamento[] = [
+  // For type safety with the department enum
+  const departamentos = [
     "Govtech",
     "Marketing",
     "Inovação",
@@ -55,6 +61,27 @@ const Team = () => {
     "Projetos"
   ];
   
+  useEffect(() => {
+    const loadTeamMembers = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchTeamMembers();
+        setMembers(data);
+      } catch (error) {
+        console.error('Error loading team members:', error);
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar os membros da equipe.",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadTeamMembers();
+  }, []);
+  
   const resetNewMember = () => {
     setNewMember({
       nome: '',
@@ -64,8 +91,10 @@ const Team = () => {
       site: 'www.tecnocomp.com.br',
       portfolio: 'www.tecnocomp.com.br/portfiolio',
       departamento: 'Govtech',
-      image: ''
+      image_url: null,
+      administrador: false
     });
+    setSelectedFile(null);
   };
   
   const handleInputChange = (e) => {
@@ -97,7 +126,23 @@ const Team = () => {
     }
   };
   
-  const handleAddMember = (e) => {
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast({
+          title: "Erro",
+          description: "A imagem deve ter menos de 2MB.",
+          variant: "destructive"
+        });
+        e.target.value = '';
+        return;
+      }
+      setSelectedFile(file);
+    }
+  };
+  
+  const handleAddMember = async (e) => {
     e.preventDefault();
     
     // Validation
@@ -110,22 +155,50 @@ const Team = () => {
       return;
     }
 
-    // Add new member to the team members array
-    teamMembers.push(newMember);
-    setMembers([...teamMembers]);
-    
-    toast({
-      title: "Sucesso",
-      description: `${newMember.nome} foi adicionado à equipe.`
-    });
-    
-    // Reset form and close modal
-    resetNewMember();
-    setOpenAddModal(false);
+    try {
+      setIsLoading(true);
+      
+      // Upload image if selected
+      let image_url = null;
+      if (selectedFile) {
+        image_url = await uploadTeamMemberImage(selectedFile);
+      }
+      
+      // Add member with image URL if available
+      const memberData = {
+        ...newMember,
+        image_url: image_url
+      };
+      
+      const newTeamMember = await addTeamMember(memberData);
+      
+      // Update local state
+      setMembers([...members, newTeamMember]);
+      
+      toast({
+        title: "Sucesso",
+        description: `${newMember.nome} foi adicionado à equipe.`
+      });
+      
+      // Reset form and close modal
+      resetNewMember();
+      setOpenAddModal(false);
+    } catch (error) {
+      console.error('Error adding member:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível adicionar o membro.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   
-  const handleEditMember = (e) => {
+  const handleEditMember = async (e) => {
     e.preventDefault();
+    
+    if (!memberToEdit) return;
     
     // Validation
     if (!memberToEdit.nome || !memberToEdit.cargo || !memberToEdit.email) {
@@ -137,21 +210,26 @@ const Team = () => {
       return;
     }
 
-    // Store original name to find member
-    const originalNome = memberToEdit.originalNome || memberToEdit.nome;
-    
-    // Find and update the team member
-    const memberIndex = teamMembers.findIndex(m => m.nome === originalNome);
-    
-    if (memberIndex !== -1) {
-      // Create a new object without the originalNome property
-      const { originalNome: _, ...memberWithoutOriginalNome } = memberToEdit;
+    try {
+      setIsLoading(true);
       
-      teamMembers[memberIndex] = {
-        ...memberWithoutOriginalNome
+      // Upload image if selected
+      let image_url = memberToEdit.image_url;
+      if (selectedFile) {
+        image_url = await uploadTeamMemberImage(selectedFile);
+      }
+      
+      const updatedData = {
+        ...memberToEdit,
+        image_url
       };
       
-      setMembers([...teamMembers]);
+      const updatedMember = await updateTeamMember(memberToEdit.id, updatedData);
+      
+      // Update local state
+      setMembers(members.map(member => 
+        member.id === memberToEdit.id ? updatedMember : member
+      ));
       
       toast({
         title: "Sucesso",
@@ -161,34 +239,48 @@ const Team = () => {
       // Close modal
       setOpenEditModal(false);
       setMemberToEdit(null);
+      setSelectedFile(null);
+    } catch (error) {
+      console.error('Error updating member:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar o membro.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
   
-  const handleDeleteMember = (memberToDelete) => {
-    // Find the index of the member to delete
-    const memberIndex = teamMembers.findIndex(m => m.nome === memberToDelete.nome);
-    
-    // Remove the member from the array
-    if (memberIndex !== -1) {
-      teamMembers.splice(memberIndex, 1);
-      setMembers([...teamMembers]);
+  const handleDeleteMember = async (memberToDelete) => {
+    try {
+      setIsLoading(true);
+      
+      await deleteTeamMember(memberToDelete.id);
+      
+      // Update local state
+      setMembers(members.filter(member => member.id !== memberToDelete.id));
       
       toast({
         title: "Membro excluído",
         description: `${memberToDelete.nome} foi removido da equipe com sucesso.`
       });
+    } catch (error) {
+      console.error('Error deleting member:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível excluir o membro.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
   
   const openEditModalForMember = (member) => {
-    // Create a copy of the member with an additional property to store the original name
-    // This helps us find the member later if the name changes
-    const memberForEdit = {
-      ...member,
-      originalNome: member.nome
-    };
-    setMemberToEdit(memberForEdit);
+    setMemberToEdit(member);
     setOpenEditModal(true);
+    setSelectedFile(null);
   };
   
   return (
@@ -209,6 +301,7 @@ const Team = () => {
                 setOpenAddModal(true);
               }}
               className="flex items-center gap-2"
+              disabled={isLoading}
             >
               <UserPlus className="h-4 w-4" />
               Adicionar Membro
@@ -216,16 +309,22 @@ const Team = () => {
           )}
         </header>
         
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {members.map((member, index) => (
-            <TeamMemberCard 
-              key={index} 
-              member={member} 
-              onDelete={isAdmin ? handleDeleteMember : undefined}
-              onEdit={isAdmin ? openEditModalForMember : undefined}
-            />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex justify-center items-center p-8">
+            <p className="text-white text-xl">Carregando...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {members.map((member) => (
+              <TeamMemberCard 
+                key={member.id} 
+                member={member} 
+                onDelete={isAdmin ? handleDeleteMember : undefined}
+                onEdit={isAdmin ? openEditModalForMember : undefined}
+              />
+            ))}
+          </div>
+        )}
         
         {/* Add Member Modal */}
         <Dialog open={openAddModal} onOpenChange={setOpenAddModal}>
@@ -289,7 +388,7 @@ const Team = () => {
                   <Input
                     id="tel"
                     name="tel"
-                    value={newMember.tel}
+                    value={newMember.tel || ''}
                     onChange={handleInputChange}
                     placeholder="+55 00 00000-0000"
                     className="bg-gray-800 text-white border-gray-700"
@@ -311,21 +410,35 @@ const Team = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="image" className="text-white">URL da Imagem (opcional)</Label>
+                  <Label htmlFor="image" className="text-white">Imagem (opcional, máx 2MB)</Label>
                   <Input
                     id="image"
                     name="image"
-                    value={newMember.image}
-                    onChange={handleInputChange}
-                    placeholder="Link para foto do colaborador"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
                     className="bg-gray-800 text-white border-gray-700"
                   />
+                </div>
+                
+                <div>
+                  <Label htmlFor="administrador" className="flex items-center text-white">
+                    <Input
+                      id="administrador"
+                      name="administrador"
+                      type="checkbox"
+                      checked={newMember.administrador || false}
+                      onChange={(e) => handleSelectChange(e.target.checked, 'administrador')}
+                      className="h-4 w-4 mr-2"
+                    />
+                    Administrador
+                  </Label>
                 </div>
               </div>
 
               <DialogFooter>
-                <Button type="submit" className="w-full">
-                  Adicionar Membro
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Adicionando..." : "Adicionar Membro"}
                 </Button>
               </DialogFooter>
             </form>
@@ -395,7 +508,7 @@ const Team = () => {
                     <Input
                       id="edit-tel"
                       name="tel"
-                      value={memberToEdit.tel}
+                      value={memberToEdit.tel || ''}
                       onChange={handleInputChange}
                       placeholder="+55 00 00000-0000"
                       className="bg-gray-800 text-white border-gray-700"
@@ -417,21 +530,38 @@ const Team = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="edit-image" className="text-white">URL da Imagem (opcional)</Label>
+                    <Label htmlFor="edit-image" className="text-white">Nova Imagem (opcional, máx 2MB)</Label>
                     <Input
                       id="edit-image"
                       name="image"
-                      value={memberToEdit.image}
-                      onChange={handleInputChange}
-                      placeholder="Link para foto do colaborador"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
                       className="bg-gray-800 text-white border-gray-700"
                     />
+                    {memberToEdit.image_url && !selectedFile && (
+                      <p className="text-xs text-gray-400 mt-1">Imagem atual mantida</p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="edit-administrador" className="flex items-center text-white">
+                      <Input
+                        id="edit-administrador"
+                        name="administrador"
+                        type="checkbox"
+                        checked={memberToEdit.administrador || false}
+                        onChange={(e) => handleSelectChange(e.target.checked, 'administrador')}
+                        className="h-4 w-4 mr-2"
+                      />
+                      Administrador
+                    </Label>
                   </div>
                 </div>
 
                 <DialogFooter>
-                  <Button type="submit" className="w-full">
-                    Salvar Alterações
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? "Salvando..." : "Salvar Alterações"}
                   </Button>
                 </DialogFooter>
               </form>

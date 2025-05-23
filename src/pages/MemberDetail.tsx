@@ -1,191 +1,164 @@
 
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { teamMembers } from '@/data/teamMembers';
 import { Button } from '@/components/ui/button';
-import "./CSS/teamstyle.css"
-import logo from "./../img/Logo.svg"
-import { useEffect, useState } from 'react';
-import Intro from './Intro/intro';
-import logoWhats from './../img/image.png'
-import FundoBG from './../img/FundoBGTecnoDesktop.mp4'
-import logo3d from './../img/tecno3d.png'
+import { ArrowLeft, Phone, Mail, Globe, Briefcase } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import HeaderMenu from '@/components/HeaderMenu';
+import { supabase, TeamMemberFromSupabase, getImageUrl } from '@/lib/supabase';
 
 const MemberDetail = () => {
   const { name } = useParams();
   const navigate = useNavigate();
-  const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
-  const [showIntro, setShowIntro] = useState(true);
-
-  const formatarNome = (nome) =>
-    nome
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/ç/g, "c")
-      .replace(/[^a-zA-Z0-9]/g, "")
-      .toLowerCase();
-
-  const member = teamMembers.find(m =>
-    formatarNome(m.nome) === formatarNome(decodeURIComponent(name || ""))
-  );
-
-  if (!member) {
+  const [member, setMember] = useState<TeamMemberFromSupabase | null>(null);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchMemberDetails = async () => {
+      try {
+        setLoading(true);
+        // Fetch all members
+        const { data: members, error } = await supabase
+          .from('team_members')
+          .select('*');
+        
+        if (error) {
+          console.error('Error fetching members:', error);
+          return;
+        }
+        
+        if (!name) return;
+        
+        // Function to convert name to searchable format
+        const formatarNome = (nome) =>
+          nome
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/ç/g, "c")
+            .replace(/[^a-zA-Z0-9]/g, "")
+            .toLowerCase();
+        
+        // Find member by formatted name
+        const foundMember = members.find(m => 
+          formatarNome(m.nome) === decodeURIComponent(name)
+        );
+        
+        if (foundMember) {
+          setMember(foundMember);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchMemberDetails();
+  }, [name]);
+  
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-orange-500 to-orange-400 flex flex-col items-center justify-center p-6">
-        <h1 className="text-white text-2xl mb-4">Membro não encontrado</h1>
-        <Button
-          onClick={() => navigate('/')}
-          className="bg-white text-orange-500 hover:bg-gray-100"
-        >
-          Voltar para página inicial
-        </Button>
-      </div>
+      <HeaderMenu>
+        <div className="content flex justify-center items-center">
+          <p className="text-xl text-white">Carregando...</p>
+        </div>
+      </HeaderMenu>
     );
   }
-
+  
+  if (!member) {
+    return (
+      <HeaderMenu>
+        <div className="content flex flex-col justify-center items-center">
+          <p className="text-xl text-white mb-4">Membro não encontrado</p>
+          <Button onClick={() => navigate('/team')} variant="outline">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Voltar para a equipe
+          </Button>
+        </div>
+      </HeaderMenu>
+    );
+  }
+  
+  // Get initials for avatar fallback
   const initials = member.nome
     .split(' ')
     .map(name => name.charAt(0))
     .join('');
-
-  // Generate WhatsApp link
-  const generateWhatsAppLink = (phoneNumber, message) => {
-    // Remove any non-digit characters from phone number
-    const cleanPhone = phoneNumber.replace(/\D/g, '');
-    const encodedMessage = encodeURIComponent(message);
-    return `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
-  };
-
-  const whatsappMessage = "Olá, " + member.nome.split(" ")[0] + ", estou entrando em contato através do cartão de visita virtual. Podemos conversar?";
-  const whatsappLink = member.tel ? generateWhatsAppLink(member.tel, whatsappMessage) : '';
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowIntro(false);
-    }, 5000); // 3 segundos
-
-    return () => clearTimeout(timer); // Limpa o timer ao desmontar
-  }, []);
-
+  
+  // Get image URL from Supabase storage
+  const imageUrl = member.image_url ? getImageUrl(member.image_url) : null;
+  
   return (
-    <div>
-      {showIntro ? (
-        <Intro />
-      ) : (
-        <>
-          <video autoPlay muted loop id="myVideoDesktop">
-            <source src={FundoBG} type="video/mp4" />
-          </video>
-          <div className="min-h-screen  flex flex-col items-center p-6" id="customMemberDetailContent">
-            <img src={logo} id='logoDetails' />
-
-            <div className="w-full max-w-md" id="mainDetailedCard">
-              <div className='wrapperButton'>
-                {isAuthenticated && (
-                  <Button
-                    onClick={() => navigate('/team')}
-                  >
-                    {'<'} Voltar
-                  </Button>
-                )}
-              </div>
-              {/* Profile Picture */}
-              <div className='Profile3d'>
-                <div className="w-40 h-40 mx-auto rounded-full overflow-hidden border-4 border-white shadow-lg">
-                  {member.image ? (
-                    <img
-                      src={member.image}
-                      alt={member.nome}
-                      className="w-full h-full object-cover"
-                    />
+    <HeaderMenu>
+      <div className="content">
+        <div className="max-w-4xl mx-auto p-6">
+          <Button 
+            variant="outline" 
+            onClick={() => navigate('/team')}
+            className="mb-6"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Voltar para a equipe
+          </Button>
+          
+          <div className="bg-black/40 rounded-lg p-8">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+              {/* Avatar */}
+              <div className="flex-shrink-0">
+                <Avatar className="h-40 w-40">
+                  {imageUrl ? (
+                    <AvatarImage src={imageUrl} alt={member.nome} className="object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-orange-600 text-white text-4xl">
+                    <AvatarFallback className="bg-orange-500 text-white text-4xl">
                       {initials}
-                    </div>
+                    </AvatarFallback>
                   )}
-                </div>
-                <div className='logowrapper'>
-                  <img src={logo3d} id="logo3d"></img>
-                </div>
+                </Avatar>
               </div>
-
-              {/* Name and Title */}
-              <div className="text-center">
-                <h1 className="text-white text-3xl font-bold mb-2">{member.nome}</h1>
-                <p >{member.cargo}</p>
-              </div>
-            
-              {/* Contact Info */}
-              <div>
-                <div className="custom">
-                  {member.tel && (
-                    <div className="mb-3">
-                      <p className="text-lg text-white-700">Contato</p>
-                      <p>{member.tel}</p>
-                    </div>
-                  )}
-
-                  <div className="mb-3">
-                    <p className="text-lg text-white-700">Email</p>
-                    <p className="break-all">
-                      {member.email.split("@").map((part, index) =>
-                        index === 0 ? (
-                          part
-                        ) : (
-                          <span key={index}>
-                            <span className="font-sans">@</span>
-                            {part}
-                          </span>
-                        )
-                      )}
-                    </p>
-                  </div>
-
+              
+              {/* Member Info */}
+              <div className="flex-1 text-center md:text-left">
+                <h1 className="text-3xl font-bold text-white mb-2">{member.nome}</h1>
+                <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
+                  <Briefcase className="h-4 w-4 text-orange-400" />
+                  <span className="font-medium text-white">{member.cargo}</span>
                 </div>
-              </div>
-
-              {/* Buttons */}
-              <div className="w-full space-y-4">
+                <p className="text-gray-300 mb-1">Departamento: {member.departamento}</p>
+                
                 {member.tel && (
-                  <Button
-                    className="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-full transition-all duration-300"
-                    onClick={() => window.open(whatsappLink, '_blank')}
-                    id='whatstalkbutton'
-                  ><span>
-                      <img src={logoWhats} id='whatslogo'></img>
-                      Conversar no WhatsApp
-                    </span>
-                  </Button>
+                  <div className="flex items-center justify-center md:justify-start gap-2 mt-4">
+                    <Phone className="h-4 w-4 text-orange-400" />
+                    <a href={`tel:${member.tel}`} className="text-white hover:text-orange-300">
+                      {member.tel}
+                    </a>
+                  </div>
                 )}
-
-                <Button
-                  className="w-full bg-[#4A4A4A] hover:bg-[#3A3A3A] text-white py-3 px-6 rounded-full transition-all duration-300"
-                  onClick={() => window.location.href = `mailto:${member.email}`}
-                >
-                  Enviar um email
-                </Button>
-
-                <Button
-                  className="w-full bg-[#4A4A4A] hover:bg-[#3A3A3A] text-white py-3 px-6 rounded-full transition-all duration-300"
-                  onClick={() => window.open(`https://${member.portfolio}`, '_blank')}
-                >
-                  Portfolio da Tecnocomp
-                </Button>
-
-                <Button
-                  className="w-full bg-[#4A4A4A] hover:bg-[#3A3A3A] text-white py-3 px-6 rounded-full transition-all duration-300"
-                  onClick={() => window.open(`https://${member.site}`, '_blank')}
-                >
-                  Acessar site
-                </Button>
-
-
+                
+                <div className="flex items-center justify-center md:justify-start gap-2 mt-2">
+                  <Mail className="h-4 w-4 text-orange-400" />
+                  <a href={`mailto:${member.email}`} className="text-white hover:text-orange-300">
+                    {member.email}
+                  </a>
+                </div>
+                
+                <div className="flex items-center justify-center md:justify-start gap-2 mt-2">
+                  <Globe className="h-4 w-4 text-orange-400" />
+                  <a 
+                    href={member.site.startsWith('http') ? member.site : `https://${member.site}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-white hover:text-orange-300"
+                  >
+                    {member.site}
+                  </a>
+                </div>
               </div>
             </div>
           </div>
-        </>
-      )}
-    </div>
-    
+        </div>
+      </div>
+    </HeaderMenu>
   );
 };
 
