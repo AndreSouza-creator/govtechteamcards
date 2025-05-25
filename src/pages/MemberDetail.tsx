@@ -164,12 +164,12 @@ const MemberDetail = () => {
                   Enviar um email
                 </Button>
 
-                <Button
+                {/* <Button
                   className="w-full bg-[#4A4A4A] hover:bg-[#3A3A3A] text-white py-3 px-6 rounded-full transition-all duration-300"
                   onClick={() => window.open(`https://${member.portfolio}`, '_blank')}
                 >
                   Portfolio da Tecnocomp
-                </Button>
+                </Button> */}
 
                 <Button
                   className="w-full bg-[#4A4A4A] hover:bg-[#3A3A3A] text-white py-3 px-6 rounded-full transition-all duration-300"

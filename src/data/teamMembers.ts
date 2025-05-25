@@ -49,7 +49,7 @@ export const teamMembers: TeamMember[] = [
   },
   {
     nome: "Mauro Cesar Marsura",
-    cargo: "Gerente de pre-vendas",
+    cargo: "Gerente de arquitetura de soluções",
     tel: "+55 11 98965-4809",
     email: "mauro.marsura@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
@@ -59,7 +59,7 @@ export const teamMembers: TeamMember[] = [
   },
   {
     nome: "Leonardo Araújo",
-    cargo: "Account Manager - GOV",
+    cargo: "Account Manager",
     tel: "+55 61 98130-5411",
     email: "leonardo.araujo@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
@@ -69,7 +69,7 @@ export const teamMembers: TeamMember[] = [
   },
   {
     nome: "Danilo Maheli Torres",
-    cargo: "Account Manager - GOV",
+    cargo: "Account Manager",
     tel: "+55 11 96326-5453",
     email: "danilo.torres@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
@@ -84,7 +84,7 @@ export const teamMembers: TeamMember[] = [
     email: "hallan.fernandes@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
-    departamento: "Grandes Contas",
+    departamento: "Grandes contas",
     image: hallan
   },
   {
