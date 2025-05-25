@@ -1,8 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { TeamMember, teamMembers } from '@/data/teamMembers';
 import { Edit, Trash2 } from 'lucide-react';
 import { 
   AlertDialog,
@@ -15,18 +17,20 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { TeamMemberFromSupabase, getImageUrl } from '@/lib/supabase';
-import "./../pages/CSS/teamstyle.css";
+import { toast } from '@/hooks/use-toast';
+import "./../pages/CSS/teamstyle.css"
 
 interface TeamMemberCardProps {
-  member: TeamMemberFromSupabase;
-  onDelete?: (member: TeamMemberFromSupabase) => void;
-  onEdit?: (member: TeamMemberFromSupabase) => void;
+  member: TeamMember;
+  departamento: string;
+  onDelete?: (member: TeamMember) => void;
+  onEdit?: (member: TeamMember) => void;
 }
 
 const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onDelete, onEdit }) => {
   const navigate = useNavigate();
   const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const initials = member.nome
     .split(' ')
@@ -59,9 +63,6 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onDelete, onEdi
       onDelete(member);
     }
   };
-
-  // Get image URL from Supabase storage
-  const imageUrl = member.image_url ? getImageUrl(member.image_url) : null;
 
   return (
     <div className="w-full hover:shadow-md transition-all duration-3000">
@@ -106,8 +107,8 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onDelete, onEdi
         )}
         
         <Avatar className="avatarTeamPage">
-          {imageUrl ? (
-            <AvatarImage src={imageUrl} alt={member.nome} />
+          {member.image ? (
+            <AvatarImage src={member.image} alt={member.nome} />
           ) : (
             <AvatarFallback className="bg-orange-500 text-white text-xl">
               {initials}
@@ -117,7 +118,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onDelete, onEdi
         
         <h3 className="bigtitle nometeam">{member.nome}</h3>
         <h2 className="bigtitle cargo">{member.cargo}</h2>
-        <span className="text-sm text-gray-400 mt-1">{member.departamento}</span>
+        <h2 className="bigtitle departamento">{member.departamento}</h2>
         <Button 
           onClick={handleClick}
           id="seeCard"

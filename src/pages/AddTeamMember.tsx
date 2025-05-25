@@ -16,6 +16,7 @@ const AddTeamMember = () => {
     nome: '',
     cargo: '',
     tel: '',
+    departamento: '',
     email: '',
     site: 'www.tecnocomp.com.br',
     portfolio: 'www.tecnocomp.com.br/portfiolio',
