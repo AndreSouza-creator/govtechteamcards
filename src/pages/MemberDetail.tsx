@@ -1,6 +1,5 @@
 
 import { useParams, useNavigate } from 'react-router-dom';
-import { teamMembers } from '@/data/teamMembers';
 import { Button } from '@/components/ui/button';
 import "./CSS/teamstyle.css"
 import logo from "./../img/Logo.svg"
@@ -9,14 +8,18 @@ import Intro from './Intro/intro';
 import logoWhats from './../img/image.png'
 import FundoBG from './../img/FundoBGTecnoDesktop.mp4'
 import logo3d from './../img/tecno3d.png'
+import { supabase } from '@/integrations/supabase/client';
+import { TeamMember } from '@/data/teamMembers';
 
 const MemberDetail = () => {
   const { name } = useParams();
   const navigate = useNavigate();
   const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
   const [showIntro, setShowIntro] = useState(true);
+  const [member, setMember] = useState<TeamMember | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const formatarNome = (nome) =>
+  const formatarNome = (nome: string) =>
     nome
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
@@ -24,9 +27,51 @@ const MemberDetail = () => {
       .replace(/[^a-zA-Z0-9]/g, "")
       .toLowerCase();
 
-  const member = teamMembers.find(m =>
-    formatarNome(m.nome) === formatarNome(decodeURIComponent(name || ""))
-  );
+  useEffect(() => {
+    const fetchMember = async () => {
+      if (!name) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('team_members')
+          .select('*');
+
+        if (error) {
+          console.error('Error fetching team members:', error);
+          return;
+        }
+
+        const formattedName = formatarNome(decodeURIComponent(name));
+        const foundMember = data?.find(m =>
+          formatarNome(m.nome) === formattedName
+        );
+
+        setMember(foundMember || null);
+      } catch (error) {
+        console.error('Error fetching member:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMember();
+  }, [name]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowIntro(false);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-orange-500 to-orange-400 flex flex-col items-center justify-center p-6">
+        <div className="text-white text-2xl">Carregando...</div>
+      </div>
+    );
+  }
 
   if (!member) {
     return (
@@ -48,8 +93,7 @@ const MemberDetail = () => {
     .join('');
 
   // Generate WhatsApp link
-  const generateWhatsAppLink = (phoneNumber, message) => {
-    // Remove any non-digit characters from phone number
+  const generateWhatsAppLink = (phoneNumber: string, message: string) => {
     const cleanPhone = phoneNumber.replace(/\D/g, '');
     const encodedMessage = encodeURIComponent(message);
     return `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
@@ -57,14 +101,6 @@ const MemberDetail = () => {
 
   const whatsappMessage = "Olá, " + member.nome.split(" ")[0] + ", estou entrando em contato através do cartão de visita virtual. Podemos conversar?";
   const whatsappLink = member.tel ? generateWhatsAppLink(member.tel, whatsappMessage) : '';
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowIntro(false);
-    }, 5000); // 3 segundos
-
-    return () => clearTimeout(timer); // Limpa o timer ao desmontar
-  }, []);
 
   return (
     <>
@@ -91,9 +127,9 @@ const MemberDetail = () => {
               {/* Profile Picture */}
               <div className='Profile3d'>
                 <div className="w-40 h-40 mx-auto rounded-full overflow-hidden border-4 border-white shadow-lg">
-                  {member.image ? (
+                  {member.image_url ? (
                     <img
-                      src={member.image}
+                      src={member.image_url}
                       alt={member.nome}
                       className="w-full h-full object-cover"
                     />
@@ -164,21 +200,12 @@ const MemberDetail = () => {
                   Enviar um email
                 </Button>
 
-                {/* <Button
-                  className="w-full bg-[#4A4A4A] hover:bg-[#3A3A3A] text-white py-3 px-6 rounded-full transition-all duration-300"
-                  onClick={() => window.open(`https://${member.portfolio}`, '_blank')}
-                >
-                  Portfolio da Tecnocomp
-                </Button> */}
-
                 <Button
                   className="w-full bg-[#4A4A4A] hover:bg-[#3A3A3A] text-white py-3 px-6 rounded-full transition-all duration-300"
                   onClick={() => window.open(`https://${member.site}`, '_blank')}
                 >
                   Acessar site
                 </Button>
-
-
               </div>
             </div>
           </div>

@@ -1,29 +1,49 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { teamMembers } from '@/data/teamMembers';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
-import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft } from 'lucide-react';
 import HeaderMenu from '@/components/HeaderMenu';
+import { supabase } from '@/integrations/supabase/client';
+import { TeamMemberInsert, Departamento } from '@/data/teamMembers';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const AddTeamMember = () => {
   const navigate = useNavigate();
-  const [newMember, setNewMember] = useState({
+  const [newMember, setNewMember] = useState<TeamMemberInsert>({
     nome: '',
     cargo: '',
     tel: '',
-    departamento: '',
+    departamento: 'Govtech',
     email: '',
     site: 'www.tecnocomp.com.br',
     portfolio: 'www.tecnocomp.com.br/portfiolio',
-    image: ''
+    image_url: ''
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const departamentos: Departamento[] = [
+    "Govtech",
+    "Marketing",
+    "Inovação",
+    "Grandes contas",
+    "Varejo",
+    "Financeiro",
+    "Fiscal",
+    "Saúde",
+    "Projetos",
+    "Corporativo",
+  ];
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewMember(prev => ({
       ...prev,
@@ -31,7 +51,14 @@ const AddTeamMember = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSelectChange = (value: Departamento) => {
+    setNewMember(prev => ({
+      ...prev,
+      departamento: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validation
@@ -44,16 +71,36 @@ const AddTeamMember = () => {
       return;
     }
 
-    // Add new member to the team members array
-    teamMembers.push(newMember);
-    
-    toast({
-      title: "Sucesso",
-      description: `${newMember.nome} foi adicionado à equipe.`
-    });
-    
-    // Navigate back to the team page
-    navigate('/team');
+    try {
+      const { error } = await supabase
+        .from('team_members')
+        .insert([newMember]);
+
+      if (error) {
+        console.error('Error adding team member:', error);
+        toast({
+          title: "Erro",
+          description: "Erro ao adicionar membro da equipe.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      toast({
+        title: "Sucesso",
+        description: `${newMember.nome} foi adicionado à equipe.`
+      });
+      
+      // Navigate back to the team page
+      navigate('/team');
+    } catch (error) {
+      console.error('Error adding team member:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao adicionar membro da equipe.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -99,11 +146,27 @@ const AddTeamMember = () => {
               </div>
 
               <div>
+                <Label htmlFor="departamento">Departamento *</Label>
+                <Select value={newMember.departamento} onValueChange={handleSelectChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione um departamento" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {departamentos.map((departamento) => (
+                      <SelectItem key={departamento} value={departamento}>
+                        {departamento}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
                 <Label htmlFor="tel">Telefone</Label>
                 <Input
                   id="tel"
                   name="tel"
-                  value={newMember.tel}
+                  value={newMember.tel || ''}
                   onChange={handleInputChange}
                   placeholder="+55 00 00000-0000"
                 />
@@ -123,11 +186,11 @@ const AddTeamMember = () => {
               </div>
 
               <div>
-                <Label htmlFor="image">URL da Imagem (opcional)</Label>
+                <Label htmlFor="image_url">URL da Imagem (opcional)</Label>
                 <Input
-                  id="image"
-                  name="image"
-                  value={newMember.image}
+                  id="image_url"
+                  name="image_url"
+                  value={newMember.image_url || ''}
                   onChange={handleInputChange}
                   placeholder="Link para foto do colaborador"
                 />

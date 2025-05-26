@@ -1,10 +1,9 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TeamMember, teamMembers } from '@/data/teamMembers';
+import { TeamMember } from '@/data/teamMembers';
 import { Edit, Trash2 } from 'lucide-react';
 import { 
   AlertDialog,
@@ -17,12 +16,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { toast } from '@/hooks/use-toast';
 import "./../pages/CSS/teamstyle.css"
 
 interface TeamMemberCardProps {
   member: TeamMember;
-  departamento: string;
   onDelete?: (member: TeamMember) => void;
   onEdit?: (member: TeamMember) => void;
 }
@@ -30,7 +27,6 @@ interface TeamMemberCardProps {
 const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onDelete, onEdit }) => {
   const navigate = useNavigate();
   const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const initials = member.nome
     .split(' ')
@@ -38,26 +34,26 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onDelete, onEdi
     .join('');
 
   const handleClick = () => {
-    const formatarNome = (nome) =>
+    const formatarNome = (nome: string) =>
       nome
-        .normalize("NFD") // Separa acentos das letras
-        .replace(/[\u0300-\u036f]/g, "") // Remove acentos
-        .replace(/ç/g, "c") // Substitui cedilha
-        .replace(/[^a-zA-Z0-9]/g, "") // Remove caracteres especiais
-        .toLowerCase(); // Converte para minúsculas
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/ç/g, "c")
+        .replace(/[^a-zA-Z0-9]/g, "")
+        .toLowerCase();
   
     const nomeFormatado = formatarNome(member.nome);
     navigate(`/member/${encodeURIComponent(nomeFormatado)}`);
   };
 
-  const handleEdit = (e) => {
+  const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (onEdit) {
       onEdit(member);
     }
   };
 
-  const handleDelete = (e) => {
+  const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (onDelete) {
       onDelete(member);
@@ -107,8 +103,8 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onDelete, onEdi
         )}
         
         <Avatar className="avatarTeamPage">
-          {member.image ? (
-            <AvatarImage src={member.image} alt={member.nome} />
+          {member.image_url ? (
+            <AvatarImage src={member.image_url} alt={member.nome} />
           ) : (
             <AvatarFallback className="bg-orange-500 text-white text-xl">
               {initials}

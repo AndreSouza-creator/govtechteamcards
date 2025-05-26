@@ -1,6 +1,5 @@
-
-import React, { useState } from 'react';
-import { teamMembers, Departamento } from '@/data/teamMembers';
+import React, { useState, useEffect } from 'react';
+import { TeamMember, TeamMemberInsert, Departamento } from '@/data/teamMembers';
 import TeamMemberCard from '@/components/TeamMemberCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,26 +21,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { supabase } from '@/integrations/supabase/client';
 import "./CSS/teamstyle.css";
 
 const Team = () => {
-  const [members, setMembers] = useState(teamMembers);
+  const [members, setMembers] = useState<TeamMember[]>([]);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
+  const [loading, setLoading] = useState(true);
   const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
   
-  const [newMember, setNewMember] = useState({
+  const [newMember, setNewMember] = useState<TeamMemberInsert>({
     nome: '',
     cargo: '',
     tel: '',
     email: '',
     site: 'www.tecnocomp.com.br',
     portfolio: 'www.tecnocomp.com.br/portfiolio',
-    departamento: 'Govtech' as Departamento,
-    image: ''
+    departamento: 'Govtech',
+    image_url: ''
   });
   
-  const [memberToEdit, setMemberToEdit] = useState(null);
+  const [memberToEdit, setMemberToEdit] = useState<TeamMember | null>(null);
   
   const departamentos: Departamento[] = [
     "Govtech",
@@ -56,17 +57,35 @@ const Team = () => {
     "Corporativo",
   ];
 
-/*   | "Govtech" 
-  | "Marketing" 
-  | "Inovação"
-  | "Grandes contas" 
-  | "Varejo" 
-  | "Financeiro" 
-  | "Fiscal"
-  | "Saúde"
-  | "Projetos"
-  | "Corporativo" 
-  | "Projetos"; */
+  // Fetch team members from Supabase
+  useEffect(() => {
+    fetchTeamMembers();
+  }, []);
+
+  const fetchTeamMembers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('team_members')
+        .select('*')
+        .order('nome');
+
+      if (error) {
+        console.error('Error fetching team members:', error);
+        toast({
+          title: "Erro",
+          description: "Erro ao carregar membros da equipe.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setMembers(data || []);
+    } catch (error) {
+      console.error('Error fetching team members:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   
   const resetNewMember = () => {
     setNewMember({
@@ -77,11 +96,11 @@ const Team = () => {
       site: 'www.tecnocomp.com.br',
       portfolio: 'www.tecnocomp.com.br/portfiolio',
       departamento: 'Govtech',
-      image: ''
+      image_url: ''
     });
   };
   
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (openEditModal && memberToEdit) {
       setMemberToEdit({
@@ -96,7 +115,7 @@ const Team = () => {
     }
   };
   
-  const handleSelectChange = (value, field) => {
+  const handleSelectChange = (value: Departamento, field: string) => {
     if (openEditModal && memberToEdit) {
       setMemberToEdit({
         ...memberToEdit,
@@ -110,7 +129,7 @@ const Team = () => {
     }
   };
   
-  const handleAddMember = (e) => {
+  const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validation
@@ -123,22 +142,44 @@ const Team = () => {
       return;
     }
 
-    // Add new member to the team members array
-    teamMembers.push(newMember);
-    setMembers([...teamMembers]);
-    
-    toast({
-      title: "Sucesso",
-      description: `${newMember.nome} foi adicionado à equipe.`
-    });
-    
-    // Reset form and close modal
-    resetNewMember();
-    setOpenAddModal(false);
+    try {
+      const { error } = await supabase
+        .from('team_members')
+        .insert([newMember]);
+
+      if (error) {
+        console.error('Error adding team member:', error);
+        toast({
+          title: "Erro",
+          description: "Erro ao adicionar membro da equipe.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      toast({
+        title: "Sucesso",
+        description: `${newMember.nome} foi adicionado à equipe.`
+      });
+      
+      // Refresh the list and close modal
+      fetchTeamMembers();
+      resetNewMember();
+      setOpenAddModal(false);
+    } catch (error) {
+      console.error('Error adding team member:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao adicionar membro da equipe.",
+        variant: "destructive"
+      });
+    }
   };
   
-  const handleEditMember = (e) => {
+  const handleEditMember = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!memberToEdit) return;
     
     // Validation
     if (!memberToEdit.nome || !memberToEdit.cargo || !memberToEdit.email) {
@@ -150,59 +191,101 @@ const Team = () => {
       return;
     }
 
-    // Store original name to find member
-    const originalNome = memberToEdit.originalNome || memberToEdit.nome;
-    
-    // Find and update the team member
-    const memberIndex = teamMembers.findIndex(m => m.nome === originalNome);
-    
-    if (memberIndex !== -1) {
-      // Create a new object without the originalNome property
-      const { originalNome: _, ...memberWithoutOriginalNome } = memberToEdit;
-      
-      teamMembers[memberIndex] = {
-        ...memberWithoutOriginalNome
-      };
-      
-      setMembers([...teamMembers]);
-      
+    try {
+      const { error } = await supabase
+        .from('team_members')
+        .update({
+          nome: memberToEdit.nome,
+          cargo: memberToEdit.cargo,
+          tel: memberToEdit.tel,
+          email: memberToEdit.email,
+          site: memberToEdit.site,
+          portfolio: memberToEdit.portfolio,
+          departamento: memberToEdit.departamento,
+          image_url: memberToEdit.image_url,
+          administrador: memberToEdit.administrador
+        })
+        .eq('id', memberToEdit.id);
+
+      if (error) {
+        console.error('Error updating team member:', error);
+        toast({
+          title: "Erro",
+          description: "Erro ao atualizar membro da equipe.",
+          variant: "destructive"
+        });
+        return;
+      }
+
       toast({
         title: "Sucesso",
         description: `Informações de ${memberToEdit.nome} foram atualizadas.`
       });
       
-      // Close modal
+      // Refresh the list and close modal
+      fetchTeamMembers();
       setOpenEditModal(false);
       setMemberToEdit(null);
-    }
-  };
-  
-  const handleDeleteMember = (memberToDelete) => {
-    // Find the index of the member to delete
-    const memberIndex = teamMembers.findIndex(m => m.nome === memberToDelete.nome);
-    
-    // Remove the member from the array
-    if (memberIndex !== -1) {
-      teamMembers.splice(memberIndex, 1);
-      setMembers([...teamMembers]);
-      
+    } catch (error) {
+      console.error('Error updating team member:', error);
       toast({
-        title: "Membro excluído",
-        description: `${memberToDelete.nome} foi removido da equipe com sucesso.`
+        title: "Erro",
+        description: "Erro ao atualizar membro da equipe.",
+        variant: "destructive"
       });
     }
   };
   
-  const openEditModalForMember = (member) => {
-    // Create a copy of the member with an additional property to store the original name
-    // This helps us find the member later if the name changes
-    const memberForEdit = {
-      ...member,
-      originalNome: member.nome
-    };
-    setMemberToEdit(memberForEdit);
+  const handleDeleteMember = async (memberToDelete: TeamMember) => {
+    try {
+      const { error } = await supabase
+        .from('team_members')
+        .delete()
+        .eq('id', memberToDelete.id);
+
+      if (error) {
+        console.error('Error deleting team member:', error);
+        toast({
+          title: "Erro",
+          description: "Erro ao excluir membro da equipe.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      toast({
+        title: "Membro excluído",
+        description: `${memberToDelete.nome} foi removido da equipe com sucesso.`
+      });
+      
+      // Refresh the list
+      fetchTeamMembers();
+    } catch (error) {
+      console.error('Error deleting team member:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao excluir membro da equipe.",
+        variant: "destructive"
+      });
+    }
+  };
+  
+  const openEditModalForMember = (member: TeamMember) => {
+    setMemberToEdit(member);
     setOpenEditModal(true);
   };
+
+  if (loading) {
+    return (
+      <div className="content">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex justify-center items-center h-64">
+            <div className="text-white">Carregando membros da equipe...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="content">
@@ -230,9 +313,9 @@ const Team = () => {
         </header>
         
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {members.map((member, index) => (
+          {members.map((member) => (
             <TeamMemberCard
-              key={index} 
+              key={member.id} 
               member={member} 
               onDelete={isAdmin ? handleDeleteMember : undefined}
               onEdit={isAdmin ? openEditModalForMember : undefined}
@@ -282,7 +365,7 @@ const Team = () => {
                   <Label htmlFor="departamento" className="text-white">Departamento *</Label>
                   <Select 
                     value={newMember.departamento} 
-                    onValueChange={(value) => handleSelectChange(value, 'departamento')}
+                    onValueChange={(value: Departamento) => handleSelectChange(value, 'departamento')}
                   >
                     <SelectTrigger className="bg-gray-800 text-white border-gray-700">
                       <SelectValue placeholder="Selecione um departamento" />
@@ -302,7 +385,7 @@ const Team = () => {
                   <Input
                     id="tel"
                     name="tel"
-                    value={newMember.tel}
+                    value={newMember.tel || ''}
                     onChange={handleInputChange}
                     placeholder="+55 00 00000-0000"
                     className="bg-gray-800 text-white border-gray-700"
@@ -324,11 +407,11 @@ const Team = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="image" className="text-white">URL da Imagem (opcional)</Label>
+                  <Label htmlFor="image_url" className="text-white">URL da Imagem (opcional)</Label>
                   <Input
-                    id="image"
-                    name="image"
-                    value={newMember.image}
+                    id="image_url"
+                    name="image_url"
+                    value={newMember.image_url || ''}
                     onChange={handleInputChange}
                     placeholder="Link para foto do colaborador"
                     className="bg-gray-800 text-white border-gray-700"
@@ -388,7 +471,7 @@ const Team = () => {
                     <Label htmlFor="edit-departamento" className="text-white">Departamento *</Label>
                     <Select 
                       value={memberToEdit.departamento} 
-                      onValueChange={(value) => handleSelectChange(value, 'departamento')}
+                      onValueChange={(value: Departamento) => handleSelectChange(value, 'departamento')}
                     >
                       <SelectTrigger className="bg-gray-800 text-white border-gray-700">
                         <SelectValue placeholder="Selecione um departamento" />
@@ -408,7 +491,7 @@ const Team = () => {
                     <Input
                       id="edit-tel"
                       name="tel"
-                      value={memberToEdit.tel}
+                      value={memberToEdit.tel || ''}
                       onChange={handleInputChange}
                       placeholder="+55 00 00000-0000"
                       className="bg-gray-800 text-white border-gray-700"
@@ -430,11 +513,11 @@ const Team = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="edit-image" className="text-white">URL da Imagem (opcional)</Label>
+                    <Label htmlFor="edit-image_url" className="text-white">URL da Imagem (opcional)</Label>
                     <Input
-                      id="edit-image"
-                      name="image"
-                      value={memberToEdit.image}
+                      id="edit-image_url"
+                      name="image_url"
+                      value={memberToEdit.image_url || ''}
                       onChange={handleInputChange}
                       placeholder="Link para foto do colaborador"
                       className="bg-gray-800 text-white border-gray-700"

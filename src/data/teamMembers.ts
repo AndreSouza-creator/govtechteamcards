@@ -1,3 +1,12 @@
+import { Database } from '@/integrations/supabase/types';
+
+export type Departamento = Database['public']['Enums']['departamento_enum'];
+
+export type TeamMember = Database['public']['Tables']['team_members']['Row'];
+
+export type TeamMemberInsert = Database['public']['Tables']['team_members']['Insert'];
+
+export type TeamMemberUpdate = Database['public']['Tables']['team_members']['Update'];
 
 import jhonatas from "./../img/TeamPictures/JhonatasRocha.png";
 import mauro from "./../img/TeamPictures/MauroMarsura.png";
@@ -11,31 +20,7 @@ import natalia from "./../img/TeamPictures/NataliaLeal.png";
 import anna from "./../img/TeamPictures/AnaSartoriCarvalho.png";
 import leonardo from "./../img/TeamPictures/LeonardoAmorin.png";
 
-export type Departamento = 
-  | "Govtech" 
-  | "Marketing" 
-  | "Inovação"
-  | "Grandes contas" 
-  | "Varejo" 
-  | "Financeiro" 
-  | "Fiscal"
-  | "Saúde"
-  | "Projetos"
-  | "Corporativo";
-
-export interface TeamMember {
-  nome: string;
-  cargo: string;
-  tel: string;
-  email: string;
-  site: string;
-  portfolio: string;
-  departamento: Departamento;
-  image?: string;
-  administrador?: boolean;
-}
-
-export const teamMembers: TeamMember[] = [
+export const initialTeamMembers: TeamMemberInsert[] = [
   {
     nome: "Jhonatas Rocha",
     cargo: "Diretor",
@@ -44,7 +29,7 @@ export const teamMembers: TeamMember[] = [
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
     departamento: "Govtech",
-    image: jhonatas,
+    image_url: jhonatas,
     administrador: true
   },
   {
@@ -55,7 +40,7 @@ export const teamMembers: TeamMember[] = [
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
     departamento: "Govtech",
-    image: mauro
+    image_url: mauro
   },
   {
     nome: "Leonardo Araújo",
@@ -65,7 +50,7 @@ export const teamMembers: TeamMember[] = [
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
     departamento: "Govtech",
-    image: leonardo
+    image_url: leonardo
   },
   {
     nome: "Danilo Maheli Torres",
@@ -75,7 +60,7 @@ export const teamMembers: TeamMember[] = [
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
     departamento: "Govtech",
-    image: danilo
+    image_url: danilo
   },
   {
     nome: "Hallan Rodrigues Fernandes",
@@ -85,7 +70,7 @@ export const teamMembers: TeamMember[] = [
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
     departamento: "Grandes contas",
-    image: hallan
+    image_url: hallan
   },
   {
     nome: "Argemiro Bezerra Junior",
@@ -95,7 +80,7 @@ export const teamMembers: TeamMember[] = [
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
     departamento: "Govtech",
-    image: argemiro
+    image_url: argemiro
   },
   {
     nome: "André de Souza Silva",
@@ -105,7 +90,7 @@ export const teamMembers: TeamMember[] = [
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
     departamento: "Govtech",
-    image: andre
+    image_url: andre
   },
   {
     nome: "Marcos Vinicius S. Revite",
@@ -115,7 +100,7 @@ export const teamMembers: TeamMember[] = [
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
     departamento: "Govtech",
-    image: marcos
+    image_url: marcos
   },
   {
     nome: "Josimar Caitano",
@@ -125,7 +110,7 @@ export const teamMembers: TeamMember[] = [
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
     departamento: "Govtech",
-    image: josimar
+    image_url: josimar
   },
   {
     nome: "Natalia Leal",
@@ -135,7 +120,7 @@ export const teamMembers: TeamMember[] = [
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
     departamento: "Govtech",
-    image: natalia
+    image_url: natalia
   },
   {
     nome: "Ana Carolina Sartori Carvalho",
@@ -145,6 +130,6 @@ export const teamMembers: TeamMember[] = [
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
     departamento: "Govtech",
-    image: anna
+    image_url: anna
   }
 ];
