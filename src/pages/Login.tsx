@@ -1,16 +1,10 @@
-
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-
-const users = {
-  admin: { password: 'govtech@2025', isAdmin: true },
-  jhonatas: { password: 'Jhonatas@Govhead', isAdmin: true },
-  mauro: { password: 'securepass', isAdmin: false },
-};
+import { supabase } from '@/integrations/supabase/client';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -21,25 +15,29 @@ const Login = () => {
   const { toast } = useToast();  
   const from = location.state?.from?.pathname || '/';
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    setTimeout(() => {
-      if (users[username] && users[username].password === password) {
-        sessionStorage.setItem('isAuthenticated', 'true');
-        sessionStorage.setItem('isAdmin', users[username].isAdmin ? 'true' : 'false');
-        sessionStorage.setItem('username', username);
-        navigate('/team', { replace: true });
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Erro de Autenticação",
-          description: "Usuário ou senha incorretos.",
-        });
-      }
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: username,
+      password,
+    });
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro de Autenticação",
+        description: error.message,
+      });
       setIsLoading(false);
-    }, 1000);
+      return;
+    }
+
+    sessionStorage.setItem('isAuthenticated', 'true');
+    sessionStorage.setItem('username', username);
+    navigate('/team', { replace: true });
+    setIsLoading(false);
   };
 
   return (
