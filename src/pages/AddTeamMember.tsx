@@ -34,7 +34,7 @@ const AddTeamMember = () => {
     "Govtech",
     "Marketing",
     "Inovação",
-    "Grandes contas",
+    "Grandes Contas",
     "Varejo",
     "Financeiro",
     "Fiscal",
