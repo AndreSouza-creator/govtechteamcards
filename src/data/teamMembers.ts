@@ -120,7 +120,7 @@ export const teamMembers: TeamMember[] = [
   {
     nome: "Josimar Caitano",
     cargo: "Solutions Architect - Post-Sales",
-    tel: "",
+    tel: "+55 11 99675-3089",
     email: "josimar.caitano@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
