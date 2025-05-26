@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import "./CSS/teamstyle.css"
@@ -9,7 +8,9 @@ import logoWhats from './../img/image.png'
 import FundoBG from './../img/FundoBGTecnoDesktop.mp4'
 import logo3d from './../img/tecno3d.png'
 import { supabase } from '@/integrations/supabase/client';
-import { TeamMember } from '@/data/teamMembers';
+import { Database } from '@/integrations/supabase/types';
+
+type TeamMember = Database['public']['Tables']['team_members']['Row'];
 
 const MemberDetail = () => {
   const { name } = useParams();

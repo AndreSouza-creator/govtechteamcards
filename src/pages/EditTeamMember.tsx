@@ -1,6 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { initialTeamMembers } from '@/data/teamMembers';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,6 +8,10 @@ import { toast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft } from 'lucide-react';
 import HeaderMenu from '@/components/HeaderMenu';
+import { Database } from '@/integrations/supabase/types';
+import { supabase } from '@/integrations/supabase/client';
+
+type TeamMember = Database['public']['Tables']['team_members']['Row'];
 
 const EditTeamMember = () => {
   const navigate = useNavigate();
@@ -36,29 +40,50 @@ const EditTeamMember = () => {
       return;
     }
 
-    if (name) {
-      const decodedName = decodeURIComponent(name);
-      const existingMember = initialTeamMembers.find(m => m.nome === decodedName);
-      
-      if (existingMember) {
-        setMember({
-          nome: existingMember.nome,
-          cargo: existingMember.cargo,
-          tel: existingMember.tel || '',
-          email: existingMember.email,
-          site: existingMember.site || 'www.tecnocomp.com.br',
-          portfolio: existingMember.portfolio || 'www.tecnocomp.com.br/portfiolio',
-          image: existingMember.image_url || ''
-        });
-      } else {
-        toast({
-          title: "Erro",
-          description: "Membro não encontrado",
-          variant: "destructive"
-        });
-        navigate('/team');
+    const fetchMember = async () => {
+      if (name) {
+        try {
+          const { data, error } = await supabase
+            .from('team_members')
+            .select('*')
+            .eq('nome', decodeURIComponent(name))
+            .single();
+
+          if (error) {
+            console.error('Error fetching team member:', error);
+            toast({
+              title: "Erro",
+              description: "Membro não encontrado",
+              variant: "destructive"
+            });
+            navigate('/team');
+            return;
+          }
+
+          if (data) {
+            setMember({
+              nome: data.nome,
+              cargo: data.cargo,
+              tel: data.tel || '',
+              email: data.email,
+              site: data.site || 'www.tecnocomp.com.br',
+              portfolio: data.portfolio || 'www.tecnocomp.com.br/portfiolio',
+              image: data.image_url || ''
+            });
+          }
+        } catch (error) {
+          console.error('Error fetching member:', error);
+          toast({
+            title: "Erro",
+            description: "Erro ao carregar dados do membro",
+            variant: "destructive"
+          });
+          navigate('/team');
+        }
       }
-    }
+    };
+
+    fetchMember();
   }, [name, navigate, isAdmin]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -69,7 +94,7 @@ const EditTeamMember = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validation
@@ -82,15 +107,30 @@ const EditTeamMember = () => {
       return;
     }
 
-    // Find and update the team member
-    const memberIndex = initialTeamMembers.findIndex(m => m.nome === decodeURIComponent(name));
-    
-    if (memberIndex !== -1) {
-      initialTeamMembers[memberIndex] = {
-        ...initialTeamMembers[memberIndex],
-        ...member
-      };
-      
+    try {
+      const { error } = await supabase
+        .from('team_members')
+        .update({
+          nome: member.nome,
+          cargo: member.cargo,
+          tel: member.tel,
+          email: member.email,
+          site: member.site,
+          portfolio: member.portfolio,
+          image_url: member.image
+        })
+        .eq('nome', decodeURIComponent(name || ''));
+
+      if (error) {
+        console.error('Error updating team member:', error);
+        toast({
+          title: "Erro",
+          description: "Erro ao atualizar membro da equipe.",
+          variant: "destructive"
+        });
+        return;
+      }
+
       toast({
         title: "Sucesso",
         description: `Informações de ${member.nome} foram atualizadas.`
@@ -98,6 +138,13 @@ const EditTeamMember = () => {
       
       // Navigate back to the team page
       navigate('/team');
+    } catch (error) {
+      console.error('Error updating team member:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao atualizar membro da equipe.",
+        variant: "destructive"
+      });
     }
   };
 
