@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { Database } from '@/integrations/supabase/types';
 import TeamMemberCard from '@/components/TeamMemberCard';
+import ImageUpload from '@/components/ImageUpload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -131,6 +131,20 @@ const Team = () => {
       setNewMember({
         ...newMember,
         [field]: value
+      });
+    }
+  };
+
+  const handleImageUrlChange = (url: string | null) => {
+    if (openEditModal && memberToEdit) {
+      setMemberToEdit({
+        ...memberToEdit,
+        image_url: url
+      });
+    } else {
+      setNewMember({
+        ...newMember,
+        image_url: url || ''
       });
     }
   };
@@ -340,6 +354,12 @@ const Team = () => {
             </DialogHeader>
             
             <form onSubmit={handleAddMember} className="space-y-6">
+              <ImageUpload
+                currentImageUrl={newMember.image_url}
+                onImageUrlChange={handleImageUrlChange}
+                memberName={newMember.nome}
+              />
+
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="nome" className="text-white">Nome Completo *</Label>
@@ -411,18 +431,6 @@ const Team = () => {
                     className="bg-gray-800 text-white border-gray-700"
                   />
                 </div>
-
-                <div>
-                  <Label htmlFor="image_url" className="text-white">URL da Imagem (opcional)</Label>
-                  <Input
-                    id="image_url"
-                    name="image_url"
-                    value={newMember.image_url || ''}
-                    onChange={handleInputChange}
-                    placeholder="Link para foto do colaborador"
-                    className="bg-gray-800 text-white border-gray-700"
-                  />
-                </div>
               </div>
 
               <DialogFooter>
@@ -446,6 +454,12 @@ const Team = () => {
             
             {memberToEdit && (
               <form onSubmit={handleEditMember} className="space-y-6">
+                <ImageUpload
+                  currentImageUrl={memberToEdit.image_url}
+                  onImageUrlChange={handleImageUrlChange}
+                  memberName={memberToEdit.nome}
+                />
+
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="edit-nome" className="text-white">Nome Completo *</Label>
@@ -514,18 +528,6 @@ const Team = () => {
                       onChange={handleInputChange}
                       placeholder="email@tecnocomp.com.br"
                       required
-                      className="bg-gray-800 text-white border-gray-700"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="edit-image_url" className="text-white">URL da Imagem (opcional)</Label>
-                    <Input
-                      id="edit-image_url"
-                      name="image_url"
-                      value={memberToEdit.image_url || ''}
-                      onChange={handleInputChange}
-                      placeholder="Link para foto do colaborador"
                       className="bg-gray-800 text-white border-gray-700"
                     />
                   </div>

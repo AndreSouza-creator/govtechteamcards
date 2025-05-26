@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { ArrowLeft } from 'lucide-react';
 import HeaderMenu from '@/components/HeaderMenu';
+import ImageUpload from '@/components/ImageUpload';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
 import {
@@ -59,6 +60,13 @@ const AddTeamMember = () => {
     setNewMember(prev => ({
       ...prev,
       departamento: value
+    }));
+  };
+
+  const handleImageUrlChange = (url: string | null) => {
+    setNewMember(prev => ({
+      ...prev,
+      image_url: url || ''
     }));
   };
 
@@ -124,6 +132,12 @@ const AddTeamMember = () => {
           </header>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            <ImageUpload
+              currentImageUrl={newMember.image_url}
+              onImageUrlChange={handleImageUrlChange}
+              memberName={newMember.nome}
+            />
+
             <div className="space-y-4">
               <div>
                 <Label htmlFor="nome">Nome Completo *</Label>
@@ -186,17 +200,6 @@ const AddTeamMember = () => {
                   onChange={handleInputChange}
                   placeholder="email@tecnocomp.com.br"
                   required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="image_url">URL da Imagem (opcional)</Label>
-                <Input
-                  id="image_url"
-                  name="image_url"
-                  value={newMember.image_url || ''}
-                  onChange={handleInputChange}
-                  placeholder="Link para foto do colaborador"
                 />
               </div>
             </div>
