@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { teamMembers } from '@/data/teamMembers';
+import { initialTeamMembers } from '@/data/teamMembers';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -39,17 +38,17 @@ const EditTeamMember = () => {
 
     if (name) {
       const decodedName = decodeURIComponent(name);
-      const existingMember = teamMembers.find(m => m.nome === decodedName);
+      const existingMember = initialTeamMembers.find(m => m.nome === decodedName);
       
       if (existingMember) {
         setMember({
           nome: existingMember.nome,
           cargo: existingMember.cargo,
-          tel: existingMember.tel,
+          tel: existingMember.tel || '',
           email: existingMember.email,
-          site: existingMember.site,
-          portfolio: existingMember.portfolio,
-          image: existingMember.image || ''
+          site: existingMember.site || 'www.tecnocomp.com.br',
+          portfolio: existingMember.portfolio || 'www.tecnocomp.com.br/portfiolio',
+          image: existingMember.image_url || ''
         });
       } else {
         toast({
@@ -84,11 +83,11 @@ const EditTeamMember = () => {
     }
 
     // Find and update the team member
-    const memberIndex = teamMembers.findIndex(m => m.nome === decodeURIComponent(name));
+    const memberIndex = initialTeamMembers.findIndex(m => m.nome === decodeURIComponent(name));
     
     if (memberIndex !== -1) {
-      teamMembers[memberIndex] = {
-        ...teamMembers[memberIndex],
+      initialTeamMembers[memberIndex] = {
+        ...initialTeamMembers[memberIndex],
         ...member
       };
       
