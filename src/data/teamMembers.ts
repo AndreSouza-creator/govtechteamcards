@@ -1,6 +1,7 @@
+
 import { Database } from '@/integrations/supabase/types';
 
-export type Departamento = Database['public']['Enums']['departamento_enum'];
+export type Departamento = Database['public']['Enums']['departamento'];
 
 export type TeamMember = Database['public']['Tables']['team_members']['Row'];
 
@@ -69,7 +70,7 @@ export const initialTeamMembers: TeamMemberInsert[] = [
     email: "hallan.fernandes@tecnocomp.com.br",
     site: "www.tecnocomp.com.br",
     portfolio: "www.tecnocomp.com.br/portfiolio",
-    departamento: "Grandes contas",
+    departamento: "Grandes Contas",
     image_url: hallan
   },
   {
