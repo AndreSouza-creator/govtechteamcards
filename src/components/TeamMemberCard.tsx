@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { TeamMember } from '@/data/teamMembers';
+import { Database } from '@/integrations/supabase/types';
 import { Edit, Trash2 } from 'lucide-react';
 import { 
   AlertDialog,
@@ -17,6 +17,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import "./../pages/CSS/teamstyle.css"
+
+type TeamMember = Database['public']['Tables']['team_members']['Row'];
 
 interface TeamMemberCardProps {
   member: TeamMember;

@@ -8,7 +8,7 @@ import { toast } from '@/hooks/use-toast';
 import { ArrowLeft } from 'lucide-react';
 import HeaderMenu from '@/components/HeaderMenu';
 import { supabase } from '@/integrations/supabase/client';
-import { TeamMemberInsert, Departamento } from '@/data/teamMembers';
+import { Database } from '@/integrations/supabase/types';
 import {
   Select,
   SelectContent,
@@ -16,6 +16,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+type Departamento = Database['public']['Enums']['departamento'];
+type TeamMemberInsert = Database['public']['Tables']['team_members']['Insert'];
 
 const AddTeamMember = () => {
   const navigate = useNavigate();
@@ -34,6 +37,7 @@ const AddTeamMember = () => {
     "Govtech",
     "Marketing",
     "Inovação",
+    "ServiceDesk",
     "Grandes Contas",
     "Varejo",
     "Financeiro",

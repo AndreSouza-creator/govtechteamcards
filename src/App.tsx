@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Team from "./pages/Team";
+import AddTeamMember from "./pages/AddTeamMember";
 import MemberDetail from "./pages/MemberDetail";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
@@ -27,6 +28,14 @@ const App = () => (
             element={
               <HeaderMenu>
                 <Team />
+              </HeaderMenu>
+            } 
+          />
+          <Route 
+            path="/add-team-member" 
+            element={
+              <HeaderMenu>
+                <AddTeamMember />
               </HeaderMenu>
             } 
           />

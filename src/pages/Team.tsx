@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { TeamMember, TeamMemberInsert, Departamento } from '@/data/teamMembers';
+import { Database } from '@/integrations/supabase/types';
 import TeamMemberCard from '@/components/TeamMemberCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,6 +24,10 @@ import {
 } from "@/components/ui/select";
 import { supabase } from '@/integrations/supabase/client';
 import "./CSS/teamstyle.css";
+
+type TeamMember = Database['public']['Tables']['team_members']['Row'];
+type TeamMemberInsert = Database['public']['Tables']['team_members']['Insert'];
+type Departamento = Database['public']['Enums']['departamento'];
 
 const Team = () => {
   const [members, setMembers] = useState<TeamMember[]>([]);
@@ -48,6 +53,7 @@ const Team = () => {
     "Govtech",
     "Marketing",
     "Inovação",
+    "ServiceDesk",
     "Grandes Contas",
     "Varejo",
     "Financeiro",
