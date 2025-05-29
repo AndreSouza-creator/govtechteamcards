@@ -105,8 +105,24 @@ const AdminPanel = () => {
     }
 
     try {
-      // Buscar usuário no auth pelo email
-      const { data: { users }, error: authError } = await supabase.auth.admin.listUsers();
+      // Buscar o usuário autenticado pelo email na tabela team_members
+      const { data: teamMember, error: teamMemberError } = await supabase
+        .from('team_members')
+        .select('*')
+        .eq('email', searchEmail.trim())
+        .single();
+
+      if (teamMemberError || !teamMember) {
+        toast({
+          title: "Membro não encontrado",
+          description: "Não foi encontrado um membro da equipe com este email.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Buscar o usuário no sistema de autenticação
+      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
       
       if (authError) {
         console.error('Erro ao buscar usuários:', authError);
@@ -118,7 +134,7 @@ const AdminPanel = () => {
         return;
       }
 
-      const authUser = users.find(user => user.email === searchEmail.trim());
+      const authUser = authUsers.users.find(user => user.email === searchEmail.trim());
       
       if (!authUser) {
         toast({
@@ -133,8 +149,7 @@ const AdminPanel = () => {
       const { error: updateError } = await supabase
         .from('team_members')
         .update({ user_id: authUser.id })
-        .eq('email', searchEmail.trim())
-        .is('user_id', null);
+        .eq('email', searchEmail.trim());
 
       if (updateError) {
         console.error('Erro ao sincronizar:', updateError);

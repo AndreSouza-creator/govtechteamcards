@@ -46,21 +46,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const fetchUserTeamData = async (userId: string) => {
     try {
-      const { data, error } = await supabase.rpc('get_current_user_team_data');
+      const { data, error } = await supabase
+        .from('team_members')
+        .select('id, nome, cargo, email, administrador, departamento')
+        .eq('user_id', userId)
+        .single();
       
       if (error) {
         console.error('Erro ao buscar dados do usuário:', error);
+        setIsAdmin(false);
+        setTeamMemberData(null);
+        sessionStorage.setItem('isAdmin', 'false');
+        sessionStorage.removeItem('userTeamData');
         return;
       }
 
-      if (data && data.length > 0) {
-        const userData = data[0];
-        setTeamMemberData(userData);
-        setIsAdmin(userData.administrador || false);
+      if (data) {
+        setTeamMemberData(data);
+        setIsAdmin(data.administrador || false);
         
         // Atualizar sessionStorage
-        sessionStorage.setItem('isAdmin', userData.administrador ? 'true' : 'false');
-        sessionStorage.setItem('userTeamData', JSON.stringify(userData));
+        sessionStorage.setItem('isAdmin', data.administrador ? 'true' : 'false');
+        sessionStorage.setItem('userTeamData', JSON.stringify(data));
       } else {
         setIsAdmin(false);
         setTeamMemberData(null);
