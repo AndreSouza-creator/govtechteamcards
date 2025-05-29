@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { UserPlus, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 import {
   Dialog,
   DialogContent,
@@ -34,7 +35,7 @@ const Team = () => {
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [loading, setLoading] = useState(true);
-  const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+  const { isAdmin } = useAuth();
   
   const [newMember, setNewMember] = useState<TeamMemberInsert>({
     nome: '',

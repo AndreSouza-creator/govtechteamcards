@@ -2,9 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { LogOut } from 'lucide-react';
+import { LogOut, Settings } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 import tecnologo from './../img/Logo.svg'
 
 interface ProtectedRouteProps {
@@ -12,39 +13,10 @@ interface ProtectedRouteProps {
 }
 
 const HeaderMenu: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { user, isAdmin, teamMemberData, loading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  
-  useEffect(() => {
-    // Check current session
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user || null);
-      setLoading(false);
-    };
-    
-    checkSession();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user || null);
-      setLoading(false);
-      
-      if (event === 'SIGNED_OUT') {
-        sessionStorage.removeItem('isAuthenticated');
-        sessionStorage.removeItem('username');
-        navigate('/login');
-      } else if (session?.user) {
-        sessionStorage.setItem('isAuthenticated', 'true');
-        sessionStorage.setItem('username', session.user.email || '');
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
   
   const handleLogout = async () => {
     try {
@@ -76,7 +48,6 @@ const HeaderMenu: React.FC<ProtectedRouteProps> = ({ children }) => {
   }
   
   if (!user) {
-    // Redirect to login page with the current location
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
   
@@ -85,7 +56,27 @@ const HeaderMenu: React.FC<ProtectedRouteProps> = ({ children }) => {
       <div className="headernavbar">
         <img src={tecnologo || ""} alt="Tecnocomp Logo"/>
         <div className="flex items-center gap-2">
-          <span className="text-white text-sm">Bem-vindo, {user.email}</span>
+          {teamMemberData && (
+            <span className="text-white text-sm">
+              Bem-vindo, {teamMemberData.nome}
+              {isAdmin && <span className="ml-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs">Admin</span>}
+            </span>
+          )}
+          {!teamMemberData && (
+            <span className="text-white text-sm">Bem-vindo, {user.email}</span>
+          )}
+          
+          {isAdmin && (
+            <Button 
+              variant="ghost" 
+              className="text-white hover:bg-orange-600" 
+              onClick={() => navigate('/admin')}
+            >
+              <Settings className="mr-2 h-4 w-4" />
+              Admin
+            </Button>
+          )}
+          
           <Button 
             variant="ghost" 
             className="text-white hover:bg-orange-600" 

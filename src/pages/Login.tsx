@@ -6,44 +6,16 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();  
-  const from = location.state?.from?.pathname || '/';
-
-  useEffect(() => {
-    // Check if user is already authenticated
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        setUser(session.user);
-      }
-    };
-    
-    checkUser();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session?.user) {
-        setUser(session.user);
-        sessionStorage.setItem('isAuthenticated', 'true');
-        sessionStorage.setItem('username', session.user.email || '');
-        navigate('/team', { replace: true });
-      } else {
-        setUser(null);
-        sessionStorage.removeItem('isAuthenticated');
-        sessionStorage.removeItem('username');
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
 
   // If user is already authenticated, redirect to team page
   if (user) {

@@ -5,6 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Database } from '@/integrations/supabase/types';
 import { Edit, Trash2 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 import { 
   AlertDialog,
   AlertDialogAction,
@@ -28,7 +29,7 @@ interface TeamMemberCardProps {
 
 const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onDelete, onEdit }) => {
   const navigate = useNavigate();
-  const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+  const { isAdmin } = useAuth();
 
   const initials = member.nome
     .split(' ')
