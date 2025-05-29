@@ -33,10 +33,15 @@ const HeaderMenu: React.FC<ProtectedRouteProps> = ({ children }) => {
           title: "Logout realizado",
           description: "Você foi desconectado com sucesso.",
         });
+        navigate('/');
       }
     } catch (error) {
       console.error('Unexpected logout error:', error);
     }
+  };
+
+  const handleAdminClick = () => {
+    navigate('/admin');
   };
   
   if (loading) {
@@ -70,7 +75,7 @@ const HeaderMenu: React.FC<ProtectedRouteProps> = ({ children }) => {
             <Button 
               variant="ghost" 
               className="text-white hover:bg-orange-600" 
-              onClick={() => navigate('/admin')}
+              onClick={handleAdminClick}
             >
               <Settings className="mr-2 h-4 w-4" />
               Admin

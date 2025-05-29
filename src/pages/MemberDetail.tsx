@@ -1,3 +1,4 @@
+
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import "./CSS/teamstyle.css"
@@ -19,6 +20,8 @@ const MemberDetail = () => {
   const [showIntro, setShowIntro] = useState(true);
   const [member, setMember] = useState<TeamMember | null>(null);
   const [loading, setLoading] = useState(true);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [showContent, setShowContent] = useState(false);
 
   const formatarNome = (nome: string) =>
     nome
@@ -61,10 +64,16 @@ const MemberDetail = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowIntro(false);
+      // Mostrar conteúdo após um pequeno delay da intro
+      setTimeout(() => setShowContent(true), 300);
     }, 5000);
 
     return () => clearTimeout(timer);
   }, []);
+
+  const handleVideoLoad = () => {
+    setVideoLoaded(true);
+  };
 
   if (loading) {
     return (
@@ -109,13 +118,32 @@ const MemberDetail = () => {
         <Intro />
       ) : (
         <>
-          <video autoPlay muted loop id="myVideoDesktop">
+          {!videoLoaded && (
+            <div className="video-loading-overlay">
+              <div className="loading-spinner">
+                <div className="text-white text-lg">Carregando vídeo...</div>
+              </div>
+            </div>
+          )}
+          <video 
+            autoPlay 
+            muted 
+            loop 
+            id="myVideoDesktop"
+            onLoadedData={handleVideoLoad}
+            style={{ opacity: videoLoaded ? 1 : 0 }}
+          >
             <source src={FundoBG} type="video/mp4" />
           </video>
-          <div className="min-h-screen  flex flex-col items-center p-6" id="customMemberDetailContent">
+          <div 
+            className={`min-h-screen flex flex-col items-center p-6 transition-all duration-1000 ${
+              showContent && videoLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+            }`} 
+            id="customMemberDetailContent"
+          >
             <img src={logo} id='logoDetails' />
 
-            <div className="w-full max-w-md" id="mainDetailedCard">
+            <div className={`w-full max-w-md card-fade-in ${showContent ? 'visible' : ''}`} id="mainDetailedCard">
               <div className='wrapperButton'>
                 {isAuthenticated && (
                   <Button
