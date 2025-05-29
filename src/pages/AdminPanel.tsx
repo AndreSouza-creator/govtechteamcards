@@ -122,7 +122,7 @@ const AdminPanel = () => {
       }
 
       // Buscar o usuário no sistema de autenticação
-      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
+      const { data: authResponse, error: authError } = await supabase.auth.admin.listUsers();
       
       if (authError) {
         console.error('Erro ao buscar usuários:', authError);
@@ -134,7 +134,7 @@ const AdminPanel = () => {
         return;
       }
 
-      const authUser = authUsers.users.find(user => user.email === searchEmail.trim());
+      const authUser = authResponse.users.find((user: any) => user.email === searchEmail.trim());
       
       if (!authUser) {
         toast({
