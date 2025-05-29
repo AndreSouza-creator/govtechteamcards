@@ -1,42 +1,100 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/components/ui/use-toast';
 import tecnologo from './../img/Logo.svg'
+
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
-//test
 
 const HeaderMenu: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
-  const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
+  const { toast } = useToast();
   
-  const handleLogout = () => {
-    sessionStorage.removeItem('isAuthenticated');
-    navigate('/login');
+  useEffect(() => {
+    // Check current session
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+      setLoading(false);
+    };
+    
+    checkSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+      setLoading(false);
+      
+      if (event === 'SIGNED_OUT') {
+        sessionStorage.removeItem('isAuthenticated');
+        sessionStorage.removeItem('username');
+        navigate('/login');
+      } else if (session?.user) {
+        sessionStorage.setItem('isAuthenticated', 'true');
+        sessionStorage.setItem('username', session.user.email || '');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+  
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Logout error:', error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao sair",
+          description: "Ocorreu um erro ao fazer logout.",
+        });
+      } else {
+        toast({
+          title: "Logout realizado",
+          description: "Você foi desconectado com sucesso.",
+        });
+      }
+    } catch (error) {
+      console.error('Unexpected logout error:', error);
+    }
   };
   
-  if (!isAuthenticated) {
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-orange-500 to-orange-400 flex items-center justify-center">
+        <div className="text-white text-lg">Carregando...</div>
+      </div>
+    );
+  }
+  
+  if (!user) {
     // Redirect to login page with the current location
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
   
   return (
-  //menu
-  <>
+    <>
       <div className="headernavbar">
-        <img src={tecnologo || ""}/>
-        <Button 
-          variant="ghost" 
-          className="text-white hover:bg-orange-600" 
-          onClick={handleLogout}
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          Logout
-        </Button>
+        <img src={tecnologo || ""} alt="Tecnocomp Logo"/>
+        <div className="flex items-center gap-2">
+          <span className="text-white text-sm">Bem-vindo, {user.email}</span>
+          <Button 
+            variant="ghost" 
+            className="text-white hover:bg-orange-600" 
+            onClick={handleLogout}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
+          </Button>
+        </div>
       </div>
       {children}
     </>
