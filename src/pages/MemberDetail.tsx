@@ -10,6 +10,8 @@ import FundoBG from './../img/FundoBGTecnoDesktop.mp4'
 import logo3d from './../img/tecno3d.png'
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+
 
 type TeamMember = Database['public']['Tables']['team_members']['Row'];
 
@@ -78,7 +80,11 @@ const MemberDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-orange-500 to-orange-400 flex flex-col items-center justify-center p-6">
-        <div className="text-white text-2xl">Carregando...</div>
+            <DotLottieReact
+          src="https://lottie.host/embed/823f17ed-5829-4d8f-824a-05ae36e8426f/PdKWO4qFNj.lottie"
+          loop
+          autoplay
+        />
       </div>
     );
   }
@@ -121,7 +127,7 @@ const MemberDetail = () => {
           {!videoLoaded && (
             <div className="video-loading-overlay">
               <div className="loading-spinner">
-                <div className="text-white text-lg">Carregando vídeo...</div>
+                <div className="text-white text-lg">...</div>
               </div>
             </div>
           )}
