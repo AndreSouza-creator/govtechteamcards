@@ -14,7 +14,7 @@ export const generateVCard = (member: TeamMember): string => {
     member.tel ? `TEL:${member.tel}` : '',
     `EMAIL:${member.email}`,
     member.site ? `URL:https://${member.site}` : '',
-    member.image_url ? `PHOTO;VALUE=URL:${member.image_url}` : '',
+    member.image_url ? `PHOTO;TYPE=JPEG;VALUE=uri:${member.image_url}` : '',
     'END:VCARD'
   ].filter(line => line !== '').join('\r\n');
   
