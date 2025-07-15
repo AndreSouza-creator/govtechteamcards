@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import "./CSS/teamstyle.css"
@@ -11,7 +10,8 @@ import logo3d from './../img/tecno3d.png'
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-
+import { downloadVCard } from '@/utils/vCardUtils';
+import { Download } from 'lucide-react';
 
 type TeamMember = Database['public']['Tables']['team_members']['Row'];
 
@@ -117,6 +117,10 @@ const MemberDetail = () => {
 
   const whatsappMessage = "Olá, " + member.nome.split(" ")[0] + ", estou entrando em contato através do cartão de visita virtual. Podemos conversar?";
   const whatsappLink = member.tel ? generateWhatsAppLink(member.tel, whatsappMessage) : '';
+
+  const handleDownloadVCard = () => {
+    downloadVCard(member);
+  };
 
   return (
     <>
@@ -240,6 +244,14 @@ const MemberDetail = () => {
                   onClick={() => window.open(`https://${member.site}`, '_blank')}
                 >
                   Acessar site
+                </Button>
+
+                <Button
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-full transition-all duration-300 flex items-center justify-center gap-2"
+                  onClick={handleDownloadVCard}
+                >
+                  <Download size={20} />
+                  Baixar vCard
                 </Button>
               </div>
             </div>
