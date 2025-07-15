@@ -118,8 +118,8 @@ const MemberDetail = () => {
   const whatsappMessage = "Olá, " + member.nome.split(" ")[0] + ", estou entrando em contato através do cartão de visita virtual. Podemos conversar?";
   const whatsappLink = member.tel ? generateWhatsAppLink(member.tel, whatsappMessage) : '';
 
-  const handleDownloadVCard = () => {
-    downloadVCard(member);
+  const handleDownloadVCard = async () => {
+    await downloadVCard(member);
   };
 
   return (
