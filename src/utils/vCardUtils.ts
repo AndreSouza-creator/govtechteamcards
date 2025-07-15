@@ -10,7 +10,7 @@ export const generateVCard = (member: TeamMember): string => {
     `FN:${member.nome}`,
     `N:${member.nome.split(' ').reverse().join(';')}`,
     `TITLE:${member.cargo}`,
-    `ORG:Tecnocomp;${member.departamento}`,
+    `ORG:Tecnocomp`,
     member.tel ? `TEL:${member.tel}` : '',
     `EMAIL:${member.email}`,
     member.site ? `URL:https://${member.site}` : '',
