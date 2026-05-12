@@ -22,13 +22,13 @@ const EditTeamMember = () => {
     tel: '',
     email: '',
     site: 'www.tecnocomp.com.br',
-    portfolio: 'www.tecnocomp.com.br/portfiolio',
+    portfolio: 'www.tecnocomp.com.br/',
     image: ''
   });
-  
+
   // Check if user is admin
   const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
-  
+
   useEffect(() => {
     if (!isAdmin) {
       toast({
@@ -96,7 +96,7 @@ const EditTeamMember = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
     if (!member.nome || !member.cargo || !member.email) {
       toast({
@@ -135,7 +135,7 @@ const EditTeamMember = () => {
         title: "Sucesso",
         description: `Informações de ${member.nome} foram atualizadas.`
       });
-      
+
       // Navigate back to the team page
       navigate('/team');
     } catch (error) {
@@ -153,8 +153,8 @@ const EditTeamMember = () => {
       <div className="content">
         <div className="max-w-2xl mx-auto p-6">
           <header className="flex items-center mb-6">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               onClick={() => navigate('/team')}
               className="mr-4"
             >
